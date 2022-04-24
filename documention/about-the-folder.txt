@@ -1,1 +1,9 @@
+Full- Text Search için incelenen teknolojiler
 
+Apache Lucene - PyLucene
+Apache Solr
+Elasticsearch
+...
+
+MongoDB - PyMongo
+...
