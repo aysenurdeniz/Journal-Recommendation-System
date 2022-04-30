@@ -1,15 +1,18 @@
 from elasticsearch import Elasticsearch
 
-es = Elasticsearch('http://localhost:9200/')
 
-es.indices.refresh(index="reviews")
+class ElasticCon:
+    def __init__(self, es_url, my_query):
+        self.es_url = Elasticsearch(es_url)
+        self.my_query = my_query
 
-resp = es.search(index="reviews", query={"match_all": {}})
+    def get_response(self):
+        resp = self.es_url.search(query=self.my_query)
+        print(resp)
 
-# print(resp)
 
-print("Got %d Hits:" % resp['hits']['total']['value'])
-for hit in resp['hits']['hits']:
-    print("%(App)s %(Sentiment_Subjectivity)s %(Translated_Review)s "
-          "%(Sentiment_Polarity)s %(Sentiment)s"
-          % hit["_source"])
+my_query = {"match_all": {}}
+my_url = 'http://localhost:9200/reviews/'
+
+object1 = ElasticCon(my_url, my_query)
+object1.get_response()
