@@ -13,21 +13,67 @@
     <title>Full Text Search</title>
 </head>
 <body class="bg-light m-3">
-    <div class="input-group">
-        <span class="input-group-text"><b>FTS Comparison</b></span>
-        <input type="text" class="form-control" placeholder="Search Word">
-        <button class="btn btn-danger" type="button" aria-expanded="false"> Search </button>
-        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                aria-expanded="false">Specific Search
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="#">Elasticsearch</a></li>
-            <li><a class="dropdown-item" href="#">Solr</a></li>
-            <li><a class="dropdown-item" href="#">...</a></li>
-        </ul>
+<div class="input-group">
+    <span class="input-group-text"><b>FTS Comparison</b></span>
+    <input type="text" name="searchWord" class="form-control" placeholder="Search Word">
+    <button class="btn btn-danger" type="button" aria-expanded="false"> Search</button>
+    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+            aria-expanded="false">Specific Search
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="#">Elasticsearch</a></li>
+        <li><a class="dropdown-item" href="#">Solr</a></li>
+        <li><a class="dropdown-item" href="#">...</a></li>
+    </ul>
+</div>
+<div class="container m-3">
+    <div class="row">
+        <div class="col-5">
+            <h6> Geçen Süre: </h6>
+            {% time %}
+        </div>
     </div>
-    <div>
-
+</div>
+<div class="container m-3">
+    <div class="row">
+        <h6> Listelenen Sonuçlar: </h6>
+        <div class="col-5">
+            <div style="font-weight: bold;">
+                {% if numresults is not none %}
+                Number of Results:
+                <span style="margin-left: 12px;">{{ numresults }}</span>
+                {% endif %}
+            </div>
+            {% if results and results|length > 0 %}
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>App</th>
+                    <th>Translated Reviews</th>
+                    <th>Sentiment</th>
+                    <th>Sentiment Polarity</th>
+                    <th>Sentiment Subjectivity</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for document in results %}
+                <tr>
+                    <td>{{ document['id'] }}</td>
+                    <td>{% if document['App'] %}{{ document['App'][0] }}{% endif %}</td>
+                    <td>{% if document['Translated_Reviews']%}{{ document['Translated_Reviews'][0] }}{% endif %}</td>
+                    <td>{% if document['Sentiment']%}{{ document['Sentiment'][0] }}{% endif %}</td>
+                    <td>{% if document['Sentiment_Polarity']%}${{ document['Sentiment_Polarity'][0] }}{% endif %}</td>
+                    <td>{% if document['Sentiment_Subjectivity']%}${{ document['Sentiment_Subjectivity'][0] }}{% endif %}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+        <div class="col-5">
+            {{ }}
+        </div>
     </div>
+</div>
 </body>
 </html>
