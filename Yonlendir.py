@@ -8,6 +8,7 @@ from timer import Timer
 app = Flask(__name__)
 
 BASE_PATH = SolrCon.my_url
+print(BASE_PATH)
 
 
 @app.route('/', methods=["GET", "POST"])
@@ -19,14 +20,16 @@ def index():
     if request.method == "POST":
         query = request.form["searchWord"]
 
-        if query is None or query == "":
-            query = "*:*"
+    if query is None or query == "":
+        query = "*:*"
 
-        # query for information and return results
-        connection = urlopen("{}{}".format(BASE_PATH, query))
-        response = simplejson.load(connection)
-        numresults = response['response']['numFound']
-        results = response['response']['docs']
+    # query for information and return results
+    connection = urlopen("{}{}".format(BASE_PATH, "den"))
+    print(connection)
+    response = simplejson.load(connection)
+    print(response)
+    numresults = response['response']['numFound']
+    results = response['response']['docs']
 
     return render_template('index.html', query=query, numresults=numresults, results=results)
 
