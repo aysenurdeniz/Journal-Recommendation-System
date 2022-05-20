@@ -16,7 +16,5 @@ class SolrCon:
     #         print("Name =", document['App'], document['Sentiment'])
 
 
-my_url = 'http://localhost:8983/solr/reviews/select?q='
+my_url = 'http://localhost:8983/solr/reviews/select?wt=json&q='
 
-object1 = SolrCon(my_url)
-object1.print_response()
