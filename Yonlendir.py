@@ -1,84 +1,66 @@
 from urllib.request import urlopen
 
 import simplejson
-from flask import Flask, redirect, url_for, render_template, request, flash
+from elasticsearch import Elasticsearch
+from flask import Flask, redirect, url_for, render_template, request, flash, jsonify
 from technologies.solr import SolrCon
 from get_timer.Timer import Timer
 
 app = Flask(__name__)
 
-my_url = 'http://localhost:8983/solr/papers/select?q='
+solr_url = 'http://localhost:8983/solr/papers/select?q='
+elastic_url = Elasticsearch('http://localhost:9200/papers/')
 timerr = Timer()
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/")
 def index():
     my_title = "Full Text Search"
+    return render_template('index.html', my_title=my_title)
+
+
+@app.route('/', methods=["GET", "POST"])
+def SolrSearch():
     query = None
     numresults = None
     results = None
     timeFin = None
-
     if request.method == "POST":
         query = request.form["searchWord"]
-        radio1 = request.form.get("keywords", False)
-        radio2 = request.form.get("domain", False)
-        radio3 = request.form.get("abstract", False)
 
-        print(radio3, radio2, radio1)
+        timerr.startTime()
+        connection = urlopen("{}keywords:{}".format(solr_url, query))
+        response = simplejson.load(connection)
+        timeFin = timerr.finishTime()
+        numresults = response['response']['numFound']
+        results = response['response']['docs']
 
-        if query is None or query == "":
-            query = "*:*"
-
-        if radio1 == "True":
-            timerr.startTime()
-            connection = urlopen("{}keywords:{}".format(my_url, query))
-            response = simplejson.load(connection)
-            timeFin = timerr.finishTime()
-            numresults = response['response']['numFound']
-            results = response['response']['docs']
-
-        if radio2 == "True":
-            timerr.startTime()
-            connection = urlopen("{}Domain:{}".format(my_url, query))
-            response = simplejson.load(connection)
-            timeFin = timerr.finishTime()
-            numresults = response['response']['numFound']
-            results = response['response']['docs']
-
-        if radio3 == "True":
-            timerr.startTime()
-            connection = urlopen("{}Abstract:{}".format(my_url, query))
-            response = simplejson.load(connection)
-            timeFin = timerr.finishTime()
-            numresults = response['response']['numFound']
-            results = response['response']['docs']
-
-        # solr_con = SolrCon("{}{}".format(my_url, query))
-        # numresults, results = solr_con.print_response()
-
-    return render_template('index.html', my_title=my_title, query=query, numresults=numresults, timeFin = timeFin,
+    return render_template('index.html', query=query, numresults=numresults, timeFin=timeFin,
                            results=results)
 
 
-#
-# @app.route('/', methods=["GET", "POST"])
-# def SolrSearch():
-#     if request.method == "POST":
-#         query = request.form["searchWord"]
-#
-#         if query is None or query == "":
-#             query = "*:*"
-#
-#         solr_con = SolrCon("{}{}".format(my_url, query))
-#         numresults, results = solr_con.print_response()
-#
-#     return render_template('index.html', query=query, numresults=numresults, results=results)
-#
-# #
-# def ElasticSearch():
-#     pass
-#
+@app.route('/', methods=["GET", "POST"])
+def ElasticSearch():
+    es_query = None
+    es_numresults = None
+    es_results = None
+    es_timeFin = None
+
+    if request.method == "POST":
+        query = request.form["searchWord"]
+        print(query)
+
+        # timerr.startTime()
+        # res = elastic_url.search(query={"match_all": {"query": query}})
+        # print(res)
+        # es_numresults = res['hits']['total']
+        # es_results = jsonify(res['hits']['hits'])
+        # es_timeFin = timerr.finishTime()
+
+
+    return render_template('index.html', es_query=es_query, es_numresults=es_numresults, es_timeFin=es_timeFin,
+                       es_results=es_results)
+
 #
 # def LuceneSearch():
 #     pass

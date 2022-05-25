@@ -27,15 +27,15 @@
             <ul class="dropdown-menu dropdown-menu-end">
                 <div class="form-check">
                     <li class="m-3">
-                        <input class="form-check-input" type="checkbox" id="solr" name="solr" value="Bike" checked>
+                        <input class="form-check-input" type="checkbox" id="solr" name="solr" value="True" checked>
                         <label class="form-check-label" for="solr"> Solr </label><br>
                     </li>
                     <li class="m-3">
-                        <input class="form-check-input" type="checkbox" id="es" name="es" value="Bike" checked>
+                        <input class="form-check-input" type="checkbox" id="es" name="es" value="True" checked>
                         <label class="form-check-label" for="es"> Elasticsearch </label><br>
                     </li>
                     <li class="m-3">
-                        <input class="form-check-input" type="checkbox" id="lucene" name="lucene" value="Bike">
+                        <input class="form-check-input" type="checkbox" id="lucene" name="lucene" value="True">
                         <label class="form-check-label" for="lucene"> Lucene </label><br>
                     </li>
                 </div>
@@ -44,17 +44,17 @@
     </div>
     <div class="container m-3">
         <div class="row">
-            {% if numresults is not none %}
-            <h6> Alınan Veri Sayısı: {{ numresults }} </h6>
-            <h6> Geçen Süre: {{timeFin}} </h6>
-            {% endif %}
             <div class="col-5">
                 {% if results and results|length > 0 %}
+                {% if numresults is not none %}
+                <p><b>Alınan Veri Sayısı: </b>{{ numresults }}&emsp;<b>Geçen Süre: </b>{{timeFin}}</p>
+                {% endif %}
                 <table class="table">
                     <thead>
                     <tr>
                         <th>Keywords</th>
                         <th>Domain</th>
+                        <th>Area</th>
                         <th>Abstract</th>
                     </tr>
                     </thead>
@@ -64,7 +64,39 @@
                         <td>{% if document['keywords'] %}{{ document['keywords'][0] }}{% endif %}</td>
                         <td>{% if document['Domain']%}{{ document['Domain'][0] }}{% endif %}
                         </td>
+                        <td>{% if document['area']%}{{ document['area'][0] }}{% endif %}
+                        </td>
                         <td>{% if document['Abstract']%}{{ document['Abstract'][0] }}{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+            </div>
+            <div class="col-2"></div>
+            <div class="col-5">
+                {% if es_results and es_results|length > 0 %}
+                {% if es_numresults is not none %}
+                <p><b>Alınan Veri Sayısı: </b>{{ es_numresults }}&emsp;<b>Geçen Süre: </b>{{es_timeFin}}</p>
+                {% endif %}
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Keywords</th>
+                        <th>Domain</th>
+                        <th>Area</th>
+                        <th>Abstract</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for hit in es_results %}
+                    <tr>
+                        <td>{% if hit['keywords'] %}{{ hit['keywords'][0] }}{% endif %}</td>
+                        <td>{% if hit['Domain']%}{{ hit['Domain'][0] }}{% endif %}
+                        </td>
+                        <td>{% if hit['area']%}{{ hit['area'][0] }}{% endif %}
+                        </td>
+                        <td>{% if hit['Abstract']%}{{ hit['Abstract'][0] }}{% endif %}</td>
                     </tr>
                     {% endfor %}
                     </tbody>

@@ -13,16 +13,16 @@
     <title>{% block title %}{% endblock %} - FTS</title>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-light">
+<nav class="navbar navbar-expand-lg bg-dark">
     <div class="container-fluid px-4">
-        <a class="navbar-brand" href="#">{% block navbar_title %}{% endblock %}</a>
+        <a class="navbar-brand text-white" href="#">{% block navbar_title %}{% endblock %}</a>
         <div class="menu d-flex justify-content-end">
             <ul class="nav nav-tabs ">
                 <li class="nav-item">
                     <a class="nav-link active" href="#">Searching</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="operationPage/indexing.html">Indexing</a>
+                    <a class="nav-link text-white" href="#">Indexing</a>
                 </li>
             </ul>
         </div>
@@ -32,9 +32,9 @@
 {% block body_content %}
 {% endblock %}
 
-<footer class="bg-light fixed-bottom">
-    <div class="container text-center m-3">
-        <p>&copy; 2022, Ayşenur Deniz</p>
+<footer class="bg-dark fixed-bottom">
+    <div class="container text-center text-white m-3">
+        <p>&copy; 2022, Ayşenur Deniz, Computer Engineering</p>
     </div>
 </footer>
 </body>
