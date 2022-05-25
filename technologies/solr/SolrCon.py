@@ -8,13 +8,11 @@ class SolrCon:
 
     def print_response(self):
         response = json.load(self.solr_url)
-        print(response['response']['numFound'], "documents found.")
+        numresults = response['response']['numFound']
+        results = response['response']['docs']
+        return numresults, results
 
     # def print_each(self):
     #     # Print the name of each document
     #     for document in self.response['response']['docs']:
     #         print("Name =", document['App'], document['Sentiment'])
-
-
-my_url = 'http://localhost:8983/solr/reviews/select?wt=json&q='
-

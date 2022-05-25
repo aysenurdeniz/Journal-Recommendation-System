@@ -12,4 +12,4 @@ class Timer:
     def finishTime(self):
         self.finished = time.perf_counter()
         distance = (self.finished - self.started) * 1000
-        print(f"{distance} ms'de tamamlandı.")
+        return distance

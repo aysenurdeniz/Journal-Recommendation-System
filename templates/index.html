@@ -1,96 +1,77 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-            crossorigin="anonymous"></script>
-    <title>Full Text Search</title>
-</head>
-<body class="bg-light m-3">
-<div class="text m-3">
-    <p class="fs-3"> SOLR vs ELASTICSEARCH </p>
-</div>
-<div class="input-group">
-    <form class="input-group" action="/" method="post">
-        <input type="text" name="searchWord" class="form-control" placeholder="Search Word">
-        <button class="btn btn-danger" type="button" aria-expanded="false"> Search</button>
-        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                aria-expanded="false">Specific Search
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end">
-            <div class="form-check">
-                <li class="m-3">
-                    <input class="form-check-input" type="checkbox" id="solr" name="solr" value="Bike" checked>
-                    <label class="form-check-label" for="solr"> Solr </label><br>
-                </li>
-                <li class="m-3">
-                    <input class="form-check-input" type="checkbox" id="es" name="es" value="Bike" checked>
-                    <label class="form-check-label" for="es"> Elasticsearch </label><br>
-                </li>
-                <li class="m-3">
-                    <input class="form-check-input" type="checkbox" id="lucene" name="lucene" value="Bike">
-                    <label class="form-check-label" for="lucene"> Lucene </label><br>
-                </li>
+{% extends "base.html" %}
+{% block title %}Full Text Search{% endblock %}
+{% block navbar_title %}
+<p> SOLR vs ELASTICSEARCH </p>
+{% endblock %}
+{% block body_content %}
+<div class="container-fluid p-3">
+    <div class="input-group">
+        <form class="input-group" action="/" method="post">
+            <div class="form-check m-2">
+                <input class="form-check-input" type="radio" name="keywords" id="keywords" value="True"/>
+                <label class="form-check-label" for="keywords"> Keywords </label>
             </div>
-        </ul>
-    </form>
-</div>
-<div class="container m-3">
-    <div class="row">
-        <div class="col-5">
-            <h6> Geçen Süre: </h6>
-            {% time %}
-        </div>
+            <div class="form-check m-2">
+                <input class="form-check-input" type="radio" name="domain" id="domain" value="True"/>
+                <label class="form-check-label" for="domain"> Domain </label>
+            </div>
+            <div class="form-check m-2">
+                <input class="form-check-input" type="radio" name="abstract" id="abstract" value="True"/>
+                <label class="form-check-label" for="abstract"> Abstract </label>
+            </div>
+            <input type="text" name="searchWord" class="form-control" placeholder="Search Word">
+            <button class="btn btn-danger" type="button" aria-expanded="false">Search</button>
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">Specific Search
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <div class="form-check">
+                    <li class="m-3">
+                        <input class="form-check-input" type="checkbox" id="solr" name="solr" value="Bike" checked>
+                        <label class="form-check-label" for="solr"> Solr </label><br>
+                    </li>
+                    <li class="m-3">
+                        <input class="form-check-input" type="checkbox" id="es" name="es" value="Bike" checked>
+                        <label class="form-check-label" for="es"> Elasticsearch </label><br>
+                    </li>
+                    <li class="m-3">
+                        <input class="form-check-input" type="checkbox" id="lucene" name="lucene" value="Bike">
+                        <label class="form-check-label" for="lucene"> Lucene </label><br>
+                    </li>
+                </div>
+            </ul>
+        </form>
     </div>
-</div>
-<div class="container m-3">
-    <div class="row">
-        <h6> Listelenen Sonuçlar: </h6>
-        <div class="col-5">
-            <div style="font-weight: bold;">
-                {% if numresults is not none %}
-                Number of Results:
-                <span style="margin-left: 12px;">{{ numresults }}</span>
+    <div class="container m-3">
+        <div class="row">
+            {% if numresults is not none %}
+            <h6> Alınan Veri Sayısı: {{ numresults }} </h6>
+            <h6> Geçen Süre: {{timeFin}} </h6>
+            {% endif %}
+            <div class="col-5">
+                {% if results and results|length > 0 %}
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Keywords</th>
+                        <th>Domain</th>
+                        <th>Abstract</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for document in results %}
+                    <tr>
+                        <td>{% if document['keywords'] %}{{ document['keywords'][0] }}{% endif %}</td>
+                        <td>{% if document['Domain']%}{{ document['Domain'][0] }}{% endif %}
+                        </td>
+                        <td>{% if document['Abstract']%}{{ document['Abstract'][0] }}{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
                 {% endif %}
             </div>
-            {% if results and results|length > 0 %}
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>App</th>
-                    <th>Translated Reviews</th>
-                    <th>Sentiment</th>
-                    <th>Sentiment Polarity</th>
-                    <th>Sentiment Subjectivity</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for document in results %}
-                <tr>
-                    <td>{{ document['id'] }}</td>
-                    <td>{% if document['App'] %}{{ document['App'][0] }}{% endif %}</td>
-                    <td>{% if document['Translated_Reviews']%}{{ document['Translated_Reviews'][0] }}{% endif %}</td>
-                    <td>{% if document['Sentiment']%}{{ document['Sentiment'][0] }}{% endif %}</td>
-                    <td>{% if document['Sentiment_Polarity']%}${{ document['Sentiment_Polarity'][0] }}{% endif %}</td>
-                    <td>{% if document['Sentiment_Subjectivity']%}${{ document['Sentiment_Subjectivity'][0] }}{% endif
-                        %}
-                    </td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            {% endif %}
-        </div>
-        <div class="col-5">
-            {{ }}
         </div>
     </div>
 </div>
-</body>
-</html>
+{% endblock %}
