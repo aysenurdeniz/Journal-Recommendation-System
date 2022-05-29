@@ -76,30 +76,25 @@
             <div class="col-2"></div>
             <div class="col-5">
                 {% if es_results and es_results|length > 0 %}
-                {% if es_numresults is not none %}
-                <p><b>Alınan Veri Sayısı: </b>{{ es_numresults }}&emsp;<b>Geçen Süre: </b>{{es_timeFin}}</p>
+                {% if es_count_results is not none %}
+                <h1>Results: ({{ es_count_results }}) </h1>
                 {% endif %}
                 <table class="table">
                     <thead>
                     <tr>
                         <th>Keywords</th>
-                        <th>Domain</th>
-                        <th>Area</th>
                         <th>Abstract</th>
                     </tr>
                     </thead>
-                    <tbody>
+
                     {% for hit in es_results %}
+                    <tbody>
                     <tr>
-                        <td>{% if hit['keywords'] %}{{ hit['keywords'][0] }}{% endif %}</td>
-                        <td>{% if hit['Domain']%}{{ hit['Domain'][0] }}{% endif %}
-                        </td>
-                        <td>{% if hit['area']%}{{ hit['area'][0] }}{% endif %}
-                        </td>
-                        <td>{% if hit['Abstract']%}{{ hit['Abstract'][0] }}{% endif %}</td>
+                        <td>{{ hit['_source']['keywords'] }}</td>
+                        <td>{{ hit['_source']['Abstract'] }}</td>
                     </tr>
-                    {% endfor %}
                     </tbody>
+                    {% endfor %}
                 </table>
                 {% endif %}
             </div>

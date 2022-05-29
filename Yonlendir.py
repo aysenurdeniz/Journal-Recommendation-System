@@ -9,57 +9,47 @@ from get_timer.Timer import Timer
 app = Flask(__name__)
 
 solr_url = 'http://localhost:8983/solr/papers/select?q='
-elastic_url = Elasticsearch('http://localhost:9200/papers/')
+elastic_url = Elasticsearch('http://localhost:9200/')
 timerr = Timer()
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
     my_title = "Full Text Search"
-    return render_template('index.html', my_title=my_title)
-
-
-@app.route('/', methods=["GET", "POST"])
-def SolrSearch():
-    query = None
-    numresults = None
-    results = None
-    timeFin = None
+    solr_time, solr_count_results, solr_results = [None, None, None]
+    es_time, es_count_results, es_results = [None, None, None]
     if request.method == "POST":
-        query = request.form["searchWord"]
+        search_word = request.form["searchWord"]
+        SolrSearch(search_word)
+        solr_time, solr_count_results, solr_results = SolrSearch(search_word)
+        es_time, es_count_results, es_results = ElasticSearch(search_word)
 
-        timerr.startTime()
-        connection = urlopen("{}keywords:{}".format(solr_url, query))
-        response = simplejson.load(connection)
-        timeFin = timerr.finishTime()
-        numresults = response['response']['numFound']
-        results = response['response']['docs']
-
-    return render_template('index.html', query=query, numresults=numresults, timeFin=timeFin,
-                           results=results)
+    return render_template('index.html', my_title=my_title, numresults=solr_results, results=solr_results,
+                           timeFin=solr_time, es_count_results=es_count_results, es_results=es_results,
+                           es_finTime=es_time)
 
 
-@app.route('/', methods=["GET", "POST"])
-def ElasticSearch():
-    es_query = None
-    es_numresults = None
-    es_results = None
-    es_timeFin = None
+def SolrSearch(search_word):
+    timerr.startTime()
+    connection = urlopen("{}keywords:{}".format(solr_url, search_word))
+    response = simplejson.load(connection)
 
-    if request.method == "POST":
-        query = request.form["searchWord"]
-        print(query)
-
-        # timerr.startTime()
-        # res = elastic_url.search(query={"match_all": {"query": query}})
-        # print(res)
-        # es_numresults = res['hits']['total']
-        # es_results = jsonify(res['hits']['hits'])
-        # es_timeFin = timerr.finishTime()
+    return timerr.finishTime(), response['response']['numFound'], response['response']['docs']
 
 
-    return render_template('index.html', es_query=es_query, es_numresults=es_numresults, es_timeFin=es_timeFin,
-                       es_results=es_results)
+def ElasticSearch(search_word):
+    body = {
+        "query": {
+            "match": {
+                "keywords": search_word
+            }
+        }
+    }
+    timerr.startTime()
+    res = elastic_url.search(index="papers", body=body)
+
+    return timerr.finishTime(), res['hits']['total']['value'], res['hits']['hits']
+
 
 #
 # def LuceneSearch():
