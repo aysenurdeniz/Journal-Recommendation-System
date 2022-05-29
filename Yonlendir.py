@@ -24,7 +24,7 @@ def index():
         solr_time, solr_count_results, solr_results = SolrSearch(search_word)
         es_time, es_count_results, es_results = ElasticSearch(search_word)
 
-    return render_template('index.html', my_title=my_title, numresults=solr_results, results=solr_results,
+    return render_template('index.html', my_title=my_title, numresults=solr_count_results, results=solr_results,
                            timeFin=solr_time, es_count_results=es_count_results, es_results=es_results,
                            es_finTime=es_time)
 
@@ -33,8 +33,8 @@ def SolrSearch(search_word):
     timerr.startTime()
     connection = urlopen("{}keywords:{}".format(solr_url, search_word))
     response = simplejson.load(connection)
-
-    return timerr.finishTime(), response['response']['numFound'], response['response']['docs']
+    finish_time = timerr.finishTime()
+    return finish_time, response['response']['numFound'], response['response']['docs']
 
 
 def ElasticSearch(search_word):
@@ -47,8 +47,8 @@ def ElasticSearch(search_word):
     }
     timerr.startTime()
     res = elastic_url.search(index="papers", body=body)
-
-    return timerr.finishTime(), res['hits']['total']['value'], res['hits']['hits']
+    finish_time = timerr.finishTime()
+    return finish_time, res['hits']['total']['value'], res['hits']['hits']
 
 
 #

@@ -61,7 +61,7 @@
                     <tbody>
                     {% for document in results %}
                     <tr>
-                        <td>{% if document['keywords'] %}{{ document['keywords'][0] }}{% endif %}</td>
+                        <td>{% if document['keywords']%}{{ document['keywords'][0]}}{% endif %}</td>
                         <td>{% if document['Domain']%}{{ document['Domain'][0] }}{% endif %}
                         </td>
                         <td>{% if document['area']%}{{ document['area'][0] }}{% endif %}
@@ -77,24 +77,27 @@
             <div class="col-5">
                 {% if es_results and es_results|length > 0 %}
                 {% if es_count_results is not none %}
-                <h1>Results: ({{ es_count_results }}) </h1>
+                <p><b>Alınan Veri Sayısı: </b>{{ es_count_results }}&emsp;<b>Geçen Süre: </b>{{timeFin}}</p>
                 {% endif %}
                 <table class="table">
                     <thead>
                     <tr>
                         <th>Keywords</th>
+                        <th>Domain</th>
+                        <th>Area</th>
                         <th>Abstract</th>
                     </tr>
                     </thead>
-
-                    {% for hit in es_results %}
                     <tbody>
+                    {% for hit in es_results %}
                     <tr>
                         <td>{{ hit['_source']['keywords'] }}</td>
+                        <td>{{ hit['_source']['Domain'] }}</td>
+                        <td>{{ hit['_source']['area'] }}</td>
                         <td>{{ hit['_source']['Abstract'] }}</td>
                     </tr>
-                    </tbody>
                     {% endfor %}
+                    </tbody>
                 </table>
                 {% endif %}
             </div>
