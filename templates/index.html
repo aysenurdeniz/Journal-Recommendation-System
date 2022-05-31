@@ -38,12 +38,13 @@
             </ul>
         </form>
     </div>
-    <div class="container m-3">
+    <div class="container-fluid mt-5">
         <div class="row">
-            <div class="col-5">
+            <div class="col-sm-6">
                 {% if results and results|length > 0 %}
                 {% if numresults is not none %}
-                <p><b>Alınan Veri Sayısı: </b>{{ numresults }}&emsp;<b>Geçen Süre: </b>{{timeFin}}</p>
+                <p class="col-sm-12 alert alert-danger text-center"><b>Number of Data: </b>{{ numresults }}&emsp;<b>
+                    Time: </b>{{timeFin}}</p>
                 {% endif %}
                 <table class="table">
                     <thead>
@@ -69,11 +70,10 @@
                 </table>
                 {% endif %}
             </div>
-            <div class="col-2"></div>
-            <div class="col-5">
+            <div class="col-sm-6">
                 {% if es_results and es_results|length > 0 %}
                 {% if es_count_results is not none %}
-                <p><b>Alınan Veri Sayısı: </b>{{ es_count_results }}&emsp;<b>Geçen Süre: </b>{{es_finTime}}</p>
+                <p class="alert alert-danger text-center"><b>Number of Data: </b>{{ es_count_results }}&emsp;<b>Time: </b>{{es_finTime}}</p>
                 {% endif %}
                 <table class="table">
                     <thead>
