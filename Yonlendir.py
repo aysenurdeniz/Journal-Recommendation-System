@@ -68,7 +68,7 @@ def SolrSearch(fields, search_word):
 
 def ElasticSearch(fields, search_word):
     timerr.startTime()
-    res = elastic_url.search(track_total_hits=True, query={"match": {fields: search_word+"%20"}})
+    res = elastic_url.search(track_total_hits=True, query={"match": {fields: search_word}})
     finish_time = timerr.finishTime()
     return finish_time, res['hits']['total']['value'], res['hits']['hits']
 
