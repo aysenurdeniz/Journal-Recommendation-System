@@ -60,7 +60,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for document in results %}
+                    {% for document in results[0:100] %}
                     <tr>
                         <td>{% if document['keywords']%}{{ document['keywords'][0]}}{% endif %}</td>
                         <td>{% if document['Domain']%}{{ document['Domain'][0] }}{% endif %}

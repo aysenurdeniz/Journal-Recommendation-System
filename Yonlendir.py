@@ -15,7 +15,7 @@ timerr = Timer()
 @app.route("/", methods=["GET", "POST"])
 def index():
     my_title = "Full Text Search"
-    solr_array, es_array = [0.0]*6, [0.0]*6
+    solr_array, es_array = [0.0] * 6, [0.0] * 6
     solr_time, solr_count_results, solr_results = [None, None, None]
     es_time, es_count_results, es_results = [None, None, None]
     fields = "keywords"
@@ -55,7 +55,7 @@ def array_average(arr):
     arr_avg = 0.0
     for i in range(1, len(arr)):
         arr_avg += arr[i]
-    return str(arr_avg / len(arr)-1)
+    return str(arr_avg / len(arr) - 1)
 
 
 def SolrSearch(fields, search_word):
@@ -68,7 +68,7 @@ def SolrSearch(fields, search_word):
 
 def ElasticSearch(fields, search_word):
     timerr.startTime()
-    res = elastic_url.search(query={"match": {fields: search_word}})
+    res = elastic_url.search(track_total_hits=True, query={"match": {fields: search_word+"%20"}})
     finish_time = timerr.finishTime()
     return finish_time, res['hits']['total']['value'], res['hits']['hits']
 
