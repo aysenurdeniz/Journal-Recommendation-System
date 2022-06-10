@@ -20,7 +20,12 @@
                 <label class="form-check-label" for="domain"> Domain </label>
             </div>
             <input type="text" name="searchWord" class="form-control" placeholder="Search Word">
-            <button class="btn btn-danger" type="button" aria-expanded="false">Search</button>
+            <select name="row_select">
+                {% for o in rowlist %}
+                <option value="{{ o.name }}">{{ o.name }}</option>
+                {% endfor %}
+            </select>
+            <button class="btn btn-danger" type="button" aria-expanded="false" onclick="">Search</button>
             <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
                     aria-expanded="false">Specific Search
             </button>
@@ -77,7 +82,8 @@
             <div class="col-sm-6">
                 {% if es_results and es_results|length > 0 %}
                 {% if es_count_results is not none %}
-                <p class="alert alert-danger text-center"><b>Number of Data: </b>{{ es_count_results }}&emsp;<b>Time: </b>{{es_finTime}}</p>
+                <p class="alert alert-danger text-center"><b>Number of Data: </b>{{ es_count_results
+                    }}&emsp;<b>Time: </b>{{es_finTime}}</p>
                 {% endif %}
                 <table class="table">
                     <thead>
