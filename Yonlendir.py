@@ -34,19 +34,18 @@ def index():
         if field_domain == "True":
             fields = "Domain"
 
-        # solr_time, solr_count_results, solr_results = SolrSearch(fields, search_word)
-        # es_time, es_count_results, es_results = ElasticSearch(fields, search_word)
+        es_time, es_count_results, es_results = ElasticSearch(fields, search_word, rowsize)
+        solr_time, solr_count_results, solr_results = SolrSearch(fields, search_word, rowsize)
 
-        for i in range(6):
-            solr_time, solr_count_results, solr_results = SolrSearch(fields, search_word, rowsize)
-            es_time, es_count_results, es_results = ElasticSearch(fields, search_word, rowsize)
-            solr_array[i] = solr_time
-            es_array[i] = es_time
 
-        print(solr_array)
-        print(es_array)
-        print("Solr Average:" + array_average(solr_array) + "\n" +
-              "ES Average:" + array_average(es_array))
+        # for i in range(6):
+        #     solr_time, solr_count_results, solr_results = SolrSearch(fields, search_word, rowsize)
+        #     es_time, es_count_results, es_results = ElasticSearch(fields, search_word, rowsize)
+        #     solr_array[i] = solr_time
+        #     es_array[i] = es_time
+        #
+        # print("Solr Average:" + array_average(solr_array) + "\n" +
+        #       "ES Average:" + array_average(es_array))
 
     return render_template('index.html', my_title=my_title, numresults=solr_count_results, results=solr_results,
                            timeFin=solr_time, es_count_results=es_count_results, es_results=es_results,
@@ -54,6 +53,7 @@ def index():
 
 
 def array_average(arr):
+    print(arr)
     arr_avg = 0.0
     for i in range(1, len(arr)):
         arr_avg += arr[i]
@@ -62,17 +62,20 @@ def array_average(arr):
 
 def SolrSearch(fields, search_word, rowsize):
     timerr.startTime()
-    connection = urlopen("{}rows={}&q={}:{}".format(solr_url, rowsize, fields, search_word))
-    response = simplejson.load(connection)
+    response = simplejson.load(urlopen("{}rows={}&q={}:{}".format(solr_url, rowsize, fields, search_word)))
     finish_time = timerr.finishTime()
     return finish_time, response['response']['numFound'], response['response']['docs']
 
 
 def ElasticSearch(fields, search_word, rowsize):
     timerr.startTime()
-    res = elastic_url.search(size=rowsize, track_total_hits=True, query={"match": {fields: search_word}})
+    response = elastic_url.search(size=rowsize, track_total_hits=True, query={"match": {fields: search_word}})
     finish_time = timerr.finishTime()
-    return finish_time, res['hits']['total']['value'], res['hits']['hits']
+    return finish_time, response['hits']['total']['value'], response['hits']['hits']
+
+
+def pagination(page=1, total=100, per_page=5):
+    offset = total - ((page - 1) * per_page) + 1
 
 
 # def LuceneSearch():
