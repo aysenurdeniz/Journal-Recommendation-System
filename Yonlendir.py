@@ -2,7 +2,8 @@ from urllib.request import urlopen
 
 import simplejson
 from elasticsearch import Elasticsearch
-from flask import Flask, redirect, url_for, render_template, request
+from flask import Flask, render_template, request
+
 from get_timer.Timer import Timer
 
 app = Flask(__name__)
@@ -34,8 +35,8 @@ def index():
         if field_domain == "True":
             fields = "Domain"
 
-        es_time, es_count_results, es_results = ElasticSearch(fields, search_word, rowsize)
-        solr_time, solr_count_results, solr_results = SolrSearch(fields, search_word, rowsize)
+        es_time, es_count_results, es_results = elastic_search(fields, search_word, rowsize)
+        solr_time, solr_count_results, solr_results = solr_search(fields, search_word, rowsize)
 
 
         # for i in range(6):
@@ -53,24 +54,43 @@ def index():
 
 
 def array_average(arr):
-    print(arr)
+    """
+    Average of values in a list
+    :param arr: list, array
+    :return: string
+    """
+    # print(arr)
     arr_avg = 0.0
     for i in range(1, len(arr)):
         arr_avg += arr[i]
     return str(arr_avg / len(arr) - 1)
 
 
-def SolrSearch(fields, search_word, rowsize):
-    timerr.startTime()
-    response = simplejson.load(urlopen("{}rows={}&q={}:{}".format(solr_url, rowsize, fields, search_word)))
-    finish_time = timerr.finishTime()
+def solr_search(fields, search_word, row_size):
+    """
+    A method to search in Apache Solr
+    :param fields: string
+    :param search_word: string
+    :param row_size: int
+    :return: int, response, document
+    """
+    timerr.start_time()
+    response = simplejson.load(urlopen("{}rows={}&q={}:{}".format(solr_url, row_size, fields, search_word)))
+    finish_time = timerr.finish_time()
     return finish_time, response['response']['numFound'], response['response']['docs']
 
 
-def ElasticSearch(fields, search_word, rowsize):
-    timerr.startTime()
-    response = elastic_url.search(size=rowsize, track_total_hits=True, query={"match": {fields: search_word}})
-    finish_time = timerr.finishTime()
+def elastic_search(fields, search_word, row_size):
+    """
+     A method to search in Elasticsearch
+    :param fields: string
+    :param search_word: string
+    :param row_size: int
+    :return: int, response, document
+    """
+    timerr.start_time()
+    response = elastic_url.search(size=row_size, track_total_hits=True, query={"match": {fields: search_word}})
+    finish_time = timerr.finish_time()
     return finish_time, response['hits']['total']['value'], response['hits']['hits']
 
 
