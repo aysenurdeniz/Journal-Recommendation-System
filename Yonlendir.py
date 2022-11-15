@@ -4,7 +4,7 @@ import simplejson
 from elasticsearch import Elasticsearch
 from flask import Flask, render_template, request
 
-from get_timer.Timer import Timer
+from back_end.get_timer.Timer import Timer
 
 app = Flask(__name__)
 
