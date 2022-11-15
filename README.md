@@ -1,2 +1,3 @@
-# full-text-search
+# Journal-Recommendation-System
+
 Related thesis 
