@@ -53,6 +53,21 @@ def index():
                            es_finTime=es_time, rowlist=rowlist)
 
 
+@app.route('/general/about_us')
+def about():
+    return render_template('/general/about_us.html')
+
+
+@app.route('/general/contact')
+def contact():
+    return render_template('/general/contact.html')
+
+
+@app.route('/user/login', methods=['GET','POST'])
+def login():
+    return render_template('/user/login.html')
+
+
 def array_average(arr):
     """
     Average of values in a list
@@ -96,14 +111,6 @@ def elastic_search(fields, search_word, row_size):
 
 def pagination(page=1, total=100, per_page=5):
     offset = total - ((page - 1) * per_page) + 1
-
-
-# def LuceneSearch():
-#     pass
-#
-#
-# def MongoDBSearch():
-#     pass
 
 
 if __name__ == '__main__':
