@@ -18,13 +18,13 @@ and open the template in the editor.
     --white-rgb: 255, 255, 255;
     --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
     --body-font-family: Muli, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-    --body-font-size: 9pt;
+    --body-font-size: 12pt;
 }
 
 /* -------- for Body -------- */
 
 .body {
-    padding: 3px;
+    padding: 0px;
     margin: 0px;
     text-decoration: none;
     font-size: var(--body-font-size);
@@ -37,13 +37,13 @@ and open the template in the editor.
 .nav_a{
     color: white;
     text-decoration: none;
-    padding: 4px;
+    padding: 5px;
 }
 
 .nav_a:hover{
     color: var(--color5);
     text-decoration: none;
-    padding: 4px;
+    padding: 5px;
 }
 
 .nav_a_active{
@@ -53,11 +53,11 @@ and open the template in the editor.
 /* -------- for Footer -------- */
 
 .footer_a {
-    color: cornflowerblue;
+    color: var(--color5);
     text-decoration: none;
 }
 
 .footer_a:hover {
-    color: brown;
+    color: var(--color3);
     text-decoration: none;
 }

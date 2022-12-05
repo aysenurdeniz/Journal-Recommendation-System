@@ -1,123 +1,113 @@
 {% extends "base.html" %}
-{% set active_page = "homepage" %}
 {% block title %}Journal Recommendation System{% endblock %}
 {% block navbar_title %}
-<p> </p>
+<p> Homepage </p>
 {% endblock %}
 {% block body_content %}
-<div class="container-fluid p-3 bg-dark" style="margin-bottom: 100px;">
-    <div class="input-group">
-        <form class="input-group" action="/" method="post">
-            <div class="form-check m-2">
-                <input class="form-check-input" type="radio" name="keywords" id="keywords" value="True"/>
-                <label class="form-check-label" for="keywords"> Keywords </label>
-            </div>
-            <div class="form-check m-2">
-                <input class="form-check-input" type="radio" name="abstract" id="abstract" value="True"/>
-                <label class="form-check-label" for="abstract"> Abstract </label>
-            </div>
-            <div class="form-check m-2">
-                <input class="form-check-input" type="radio" name="domain" id="domain" value="True"/>
-                <label class="form-check-label" for="domain"> Domain </label>
-            </div>
-            <input type="text" name="searchWord" class="form-control" placeholder="Search Word">
-            <select class="form-select" name="row_select">
-                <option selected>Select Row Size</option>
-                {% for o in rowlist %}
-                <option value="{{ o.name }}">{{ o.name }}</option>
-                {% endfor %}
-            </select>
-            <button class="btn btn-danger" type="button" aria-expanded="false">Search</button>
-            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                    aria-expanded="false">Specific Search
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <div class="form-check">
-                    <li class="m-3">
-                        <input class="form-check-input" type="checkbox" id="solr" name="solr" value="True" checked>
-                        <label class="form-check-label" for="solr"> Solr </label><br>
-                    </li>
-                    <li class="m-3">
-                        <input class="form-check-input" type="checkbox" id="es" name="es" value="True" checked>
-                        <label class="form-check-label" for="es"> Elasticsearch </label><br>
-                    </li>
-                    <li class="m-3">
-                        <input class="form-check-input" type="checkbox" id="lucene" name="lucene" value="True">
-                        <label class="form-check-label" for="lucene"> Lucene </label><br>
-                    </li>
-                    <li class="m-3">
-                        <input class="form-check-input" type="checkbox" id="sphinx" name="sphinx" value="True">
-                        <label class="form-check-label" for="sphinx"> Sphinx </label><br>
-                    </li>
-                    <li class="m-3">
-                        <input class="form-check-input" type="checkbox" id="xapian" name="xapian" value="True">
-                        <label class="form-check-label" for="xapian"> Xapian </label><br>
-                    </li>
-                </div>
-            </ul>
-        </form>
-    </div>
+<div class="container p-3">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="input-group">
+                <form class="input-group" action="/" method="post">
+                    <!--<div class="form-check p-3">
+                        <input class="form-check-input" type="radio" name="keywords" id="keywords" value="True"/>
+                        <label class="form-check-label" for="keywords"> Keywords </label>
+                    </div>
+                    <div class="form-check p-3">
+                        <input class="form-check-input" type="radio" name="abstract" id="abstract" value="True"/>
+                        <label class="form-check-label" for="abstract"> Abstract </label>
+                    </div>
+                    <div class="form-check p-3">
+                        <input class="form-check-input" type="radio" name="domain" id="domain" value="True"/>
+                        <label class="form-check-label" for="domain"> Domain </label>
+                    </div> -->
+                    <input type="text" name="searchWord" class="form-control" placeholder="Search Word">
+                    <button class="btn btn-dark" type="button" aria-expanded="false">Search</button>
 
-    <div class="container-fluid mt-5">
-        <div class="row">
-            <div class="col-sm-6">
-                {% if results and results|length > 0 %}
-                {% if numresults is not none %}
-                <p class="col-sm-12 alert alert-danger text-center"><b>Number of Data: </b>{{ numresults }}&emsp;<b>
-                    Time: </b>{{timeFin}}</p>
-                {% endif %}
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Keywords</th>
-                        <th>Domain</th>
-                        <th>Area</th>
-                        <th>Abstract</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for document in results %}
-                    <tr>
-                        <td>{% if document['keywords']%}{{ document['keywords'][0]}}{% endif %}</td>
-                        <td>{% if document['Domain']%}{{ document['Domain'][0] }}{% endif %}
-                        </td>
-                        <td>{% if document['area']%}{{ document['area'][0] }}{% endif %}
-                        </td>
-                        <td>{% if document['Abstract']%}{{ document['Abstract'][0] }}{% endif %}</td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-                {% endif %}
+                    <!--<select class="form-select" name="row_select">
+                        <option selected>Select Row Size</option>
+                        {% for o in rowlist %}
+                        <option value="{{ o.name }}">{{ o.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <div class="form-check">
+                            <li class="p-3">
+                                <input class="form-check-input" type="checkbox" id="solr" name="solr" value="True"
+                                       checked>
+                                <label class="form-check-label" for="solr"> Solr </label><br>
+                            </li>
+                            <li class="p-3">
+                                <input class="form-check-input" type="checkbox" id="es" name="es" value="True" checked>
+                                <label class="form-check-label" for="es"> Elasticsearch </label><br>
+                            </li>
+                        </div>
+                    </ul> -->
+                </form>
             </div>
-            <div class="col-sm-6">
-                {% if es_results and es_results|length > 0 %}
-                {% if es_count_results is not none %}
-                <p class="alert alert-danger text-center"><b>Number of Data: </b>{{ es_count_results
-                    }}&emsp;<b>Time: </b>{{es_finTime}}</p>
-                {% endif %}
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Keywords</th>
-                        <th>Domain</th>
-                        <th>Area</th>
-                        <th>Abstract</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for hit in es_results%}
-                    <tr>
-                        <td>{% if hit['_source']['keywords']%}{{ hit['_source']['keywords'] }}{% endif %}</td>
-                        <td>{% if hit['_source']['Domain']%}{{ hit['_source']['Domain'] }}{% endif %}</td>
-                        <td>{% if hit['_source']['area']%}{{ hit['_source']['area'] }}{% endif %}</td>
-                        <td>{% if hit['_source']['Abstract']%}{{ hit['_source']['Abstract'] }}{% endif %}</td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-                {% endif %}
-            </div>
+        </div>
+        <div class="col-lg-12">
+            <a class="text-end">Advanced Search</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            {% if results and results|length > 0 %}
+            {% if numresults is not none %}
+            <p class="col-sm-12 alert alert-danger text-center"><b>Number of Data: </b>{{ numresults }}&emsp;<b>
+                Time: </b>{{timeFin}}</p>
+            {% endif %}
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Keywords</th>
+                    <th>Domain</th>
+                    <th>Area</th>
+                    <th>Abstract</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for document in results %}
+                <tr>
+                    <td>{% if document['keywords']%}{{ document['keywords'][0]}}{% endif %}</td>
+                    <td>{% if document['Domain']%}{{ document['Domain'][0] }}{% endif %}
+                    </td>
+                    <td>{% if document['area']%}{{ document['area'][0] }}{% endif %}
+                    </td>
+                    <td>{% if document['Abstract']%}{{ document['Abstract'][0] }}{% endif %}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+        <div class="col-sm-6">
+            {% if es_results and es_results|length > 0 %}
+            {% if es_count_results is not none %}
+            <p class="alert alert-danger text-center"><b>Number of Data: </b>{{ es_count_results
+                }}&emsp;<b>Time: </b>{{es_finTime}}</p>
+            {% endif %}
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Keywords</th>
+                    <th>Domain</th>
+                    <th>Area</th>
+                    <th>Abstract</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for hit in es_results%}
+                <tr>
+                    <td>{% if hit['_source']['keywords']%}{{ hit['_source']['keywords'] }}{% endif %}</td>
+                    <td>{% if hit['_source']['Domain']%}{{ hit['_source']['Domain'] }}{% endif %}</td>
+                    <td>{% if hit['_source']['area']%}{{ hit['_source']['area'] }}{% endif %}</td>
+                    <td>{% if hit['_source']['Abstract']%}{{ hit['_source']['Abstract'] }}{% endif %}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
         </div>
     </div>
 </div>

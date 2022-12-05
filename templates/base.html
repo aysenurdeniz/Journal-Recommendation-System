@@ -13,9 +13,9 @@
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='stylesheets/style.css') }}">
     <title>{% block title %}{% endblock %} - FTS</title>
 </head>
-<body>
+<body class="body">
 <nav class="navbar navbar-expand-lg bg-dark">
-    <div class="container-fluid px-4">
+    <div class="container-fluid">
         <a class="navbar-brand text-white" href="#">{% block navbar_title %}{% endblock %}</a>
         <div class="menu d-flex justify-content-end">
             <ul class="nav">
@@ -36,11 +36,8 @@
     </div>
 </nav>
 
-
-<div class="body">
-    {% block body_content %}
-    {% endblock %}
-</div>
+{% block body_content %}
+{% endblock %}
 
 
 <footer class="bg-dark fixed-bottom">
@@ -50,13 +47,6 @@
     </div>
 </footer>
 </body>
-
-<!-- script for active page
-<script>
-    $(document).ready(function () {
-        $("#{{request.endpoint}}").addClass("active");
-    })
-</script> -->
 
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
         integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
