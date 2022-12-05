@@ -1,10 +1,11 @@
 {% extends "base.html" %}
+{% set active_page = "homepage" %}
 {% block title %}Journal Recommendation System{% endblock %}
 {% block navbar_title %}
 <p> </p>
 {% endblock %}
 {% block body_content %}
-<div class="container-fluid p-3" style="margin-bottom: 100px;">
+<div class="container-fluid p-3 bg-dark" style="margin-bottom: 100px;">
     <div class="input-group">
         <form class="input-group" action="/" method="post">
             <div class="form-check m-2">
