@@ -14,9 +14,11 @@
     <title>{% block title %}{% endblock %} - FTS</title>
 </head>
 <body class="body">
-<nav class="navbar navbar-expand-lg bg-dark">
+<nav class="navbar navbar-expand-lg bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand text-white" href="#">{% block navbar_title %}{% endblock %}</a>
+        <a class="navbar-brand" href="{{ url_for('index') }}">
+            <img src="../static/img/c-jrs.png" style="width: 131px; height: 41px;">
+        </a>
         <div class="menu d-flex justify-content-end">
             <ul class="nav">
                 <li class="nav-item">
@@ -40,8 +42,8 @@
 {% endblock %}
 
 
-<footer class="bg-dark fixed-bottom">
-    <div class="container text-center text-white p-3">
+<footer class="bg-light fixed-bottom">
+    <div class="container text-center p-3">
         <p> 2022 &copy; <a class="footer_a" href="https://aysenurdeniz.github.io/" target="_blank">Aysenur Deniz</a> and
             <a class="footer_a" href="https://aaaydin.github.io/" target="_blank">Ahmet Arif Aydin</a></p>
     </div>
