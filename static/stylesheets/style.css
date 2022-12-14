@@ -9,10 +9,12 @@ and open the template in the editor.
 */
 
 :root {
-    --color1: #7fa998;
-    --color2: #f1f1b0;
-    --color3: #df8543;
-    --color4: #9d2503;
+    --color1: #050934;
+    --color2: #001A50;
+    --color3: #032470;
+    --color4: #0656D9;
+    --color5: #3D88EE;
+    --color6: #050F40;
     --black-rgb: 0, 0, 0;
     --white-rgb: 255, 255, 255;
     --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
@@ -31,6 +33,11 @@ and open the template in the editor.
     background: var(--white-rgb);
 }
 
+.login_bg{
+    background: linear-gradient(rgba(0,0,0,0.8), rgba(22,22,22,0.6)), url("../img/background.jpg") no-repeat;
+    background-size: cover;
+}
+
 /* -------- for Navbar -------- */
 
 .nav_a{
@@ -40,23 +47,23 @@ and open the template in the editor.
 }
 
 .nav_a:hover{
-    color: var(--color4);
+    color: var(--color5);
     text-decoration: none;
     padding: 5px;
 }
 
 .nav_a_active{
-    color: var(--color3);
+    color: var(--color4);
 }
 
 /* -------- for Footer -------- */
 
 .footer_a {
-    color: var(--color3);
+    color: var(--color4);
     text-decoration: none;
 }
 
 .footer_a:hover {
-    color: var(--color4);
+    color: var(--color5);
     text-decoration: none;
 }

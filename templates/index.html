@@ -2,9 +2,9 @@
 {% block title %}Journal Recommendation System{% endblock %}
 
 {% block body_content %}
-<div class="container p-3">
-    <div class="row">
-        <div class="col-lg-12">
+<div class="login_bg">
+    <div class="container p-3">
+        <div class="row">
             <div class="input-group">
                 <form class="input-group" action="/" method="post">
                     <!--<div class="form-check p-3">
@@ -20,7 +20,7 @@
                         <label class="form-check-label" for="domain"> Domain </label>
                     </div> -->
                     <input type="text" name="searchWord" class="form-control" placeholder="Search Word">
-                    <button class="btn btn-dark" type="button" aria-expanded="false">Search</button>
+                    <button class="btn btn-primary" type="button" aria-expanded="false">Search</button>
 
                     <!--<select class="form-select" name="row_select">
                         <option selected>Select Row Size</option>
@@ -43,72 +43,139 @@
                     </ul> -->
                 </form>
             </div>
+            <div class="collapse" id="advanced-search">
+                <div class=" container p-3">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="input-group mb-3">
+                                <label class="input-group-text" for="field-select-1">Field</label>
+                                <select class="form-select" id="field-select-1">
+                                    <option selected>Choose...</option>
+                                    <option value="1">Aims and Scope</option>
+                                    <option value="2">Abstracting and Indexing</option>
+                                    <option value="3">Collections</option>
+                                </select>
+                                <input type="text" name="otherWord1" class="form-control col-4"
+                                       placeholder="Other Word 1">
+                                <label class="input-group-text" for="operation-select-1">Operation</label>
+                                <select class="form-select" id="operation-select-1">
+                                    <option selected>Choose...</option>
+                                    <option value="1">AND</option>
+                                    <option value="2">OR</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="input-group mb-3">
+                                <label class="input-group-text" for="field-select-2">Field</label>
+                                <select class="form-select" id="field-select-2">
+                                    <option selected>Choose...</option>
+                                    <option value="1">Aims and Scope</option>
+                                    <option value="2">Abstracting and Indexing</option>
+                                    <option value="3">Collections</option>
+                                </select>
+                                <input type="text" name="otherWord2" class="form-control col-4"
+                                       placeholder="Other Word 2">
+                                <label class="input-group-text" for="operation-select-2">Operation</label>
+                                <select class="form-select" id="operation-select-2">
+                                    <option selected>Choose...</option>
+                                    <option value="1">AND</option>
+                                    <option value="2">OR</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="input-group mb-3">
+                                <label class="input-group-text" for="field-select-3">Field</label>
+                                <select class="form-select" id="field-select-3">
+                                    <option selected>Choose...</option>
+                                    <option value="1">Aims and Scope</option>
+                                    <option value="2">Abstracting and Indexing</option>
+                                    <option value="3">Collections</option>
+                                </select>
+                                <input type="text" name="otherWord3" class="form-control col-4"
+                                       placeholder="Other Word 3">
+                                <label class="input-group-text" for="operation-select-3">Operation</label>
+                                <select class="form-select" id="operation-select-3">
+                                    <option selected>Choose...</option>
+                                    <option value="1">AND</option>
+                                    <option value="2">OR</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12 p-3 position-relative">
+                <div class="position-absolute bottom-0 end-0">
+                    <a class="link-light" data-bs-toggle="collapse" href="#advanced-search" role="button"
+                       aria-expanded="false" aria-controls="advanced-search">
+                        Advanced Search
+                    </a>
+                </div>
+            </div>
         </div>
-        <div class="col-lg-12 p-3 position-relative">
-            <div class="position-absolute bottom-0 end-0">
-                <a href="#" class="link-dark">Advanced Search</a>
+        <div class="row">
+            <div class="col-sm-6">
+                {% if results and results|length > 0 %}
+                {% if numresults is not none %}
+                <p class="col-sm-12 alert alert-danger text-center"><b>Number of Data: </b>{{ numresults }}&emsp;<b>
+                    Time: </b>{{timeFin}}</p>
+                {% endif %}
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Keywords</th>
+                        <th>Domain</th>
+                        <th>Area</th>
+                        <th>Abstract</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for document in results %}
+                    <tr>
+                        <td>{% if document['keywords']%}{{ document['keywords'][0]}}{% endif %}</td>
+                        <td>{% if document['Domain']%}{{ document['Domain'][0] }}{% endif %}
+                        </td>
+                        <td>{% if document['area']%}{{ document['area'][0] }}{% endif %}
+                        </td>
+                        <td>{% if document['Abstract']%}{{ document['Abstract'][0] }}{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+            </div>
+            <div class="col-sm-6">
+                {% if es_results and es_results|length > 0 %}
+                {% if es_count_results is not none %}
+                <p class="alert alert-danger text-center"><b>Number of Data: </b>{{ es_count_results
+                    }}&emsp;<b>Time: </b>{{es_finTime}}</p>
+                {% endif %}
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Keywords</th>
+                        <th>Domain</th>
+                        <th>Area</th>
+                        <th>Abstract</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for hit in es_results%}
+                    <tr>
+                        <td>{% if hit['_source']['keywords']%}{{ hit['_source']['keywords'] }}{% endif %}</td>
+                        <td>{% if hit['_source']['Domain']%}{{ hit['_source']['Domain'] }}{% endif %}</td>
+                        <td>{% if hit['_source']['area']%}{{ hit['_source']['area'] }}{% endif %}</td>
+                        <td>{% if hit['_source']['Abstract']%}{{ hit['_source']['Abstract'] }}{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-sm-6">
-            {% if results and results|length > 0 %}
-            {% if numresults is not none %}
-            <p class="col-sm-12 alert alert-danger text-center"><b>Number of Data: </b>{{ numresults }}&emsp;<b>
-                Time: </b>{{timeFin}}</p>
-            {% endif %}
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>Keywords</th>
-                    <th>Domain</th>
-                    <th>Area</th>
-                    <th>Abstract</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for document in results %}
-                <tr>
-                    <td>{% if document['keywords']%}{{ document['keywords'][0]}}{% endif %}</td>
-                    <td>{% if document['Domain']%}{{ document['Domain'][0] }}{% endif %}
-                    </td>
-                    <td>{% if document['area']%}{{ document['area'][0] }}{% endif %}
-                    </td>
-                    <td>{% if document['Abstract']%}{{ document['Abstract'][0] }}{% endif %}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            {% endif %}
-        </div>
-        <div class="col-sm-6">
-            {% if es_results and es_results|length > 0 %}
-            {% if es_count_results is not none %}
-            <p class="alert alert-danger text-center"><b>Number of Data: </b>{{ es_count_results
-                }}&emsp;<b>Time: </b>{{es_finTime}}</p>
-            {% endif %}
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>Keywords</th>
-                    <th>Domain</th>
-                    <th>Area</th>
-                    <th>Abstract</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for hit in es_results%}
-                <tr>
-                    <td>{% if hit['_source']['keywords']%}{{ hit['_source']['keywords'] }}{% endif %}</td>
-                    <td>{% if hit['_source']['Domain']%}{{ hit['_source']['Domain'] }}{% endif %}</td>
-                    <td>{% if hit['_source']['area']%}{{ hit['_source']['area'] }}{% endif %}</td>
-                    <td>{% if hit['_source']['Abstract']%}{{ hit['_source']['Abstract'] }}{% endif %}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            {% endif %}
-        </div>
-    </div>
 </div>
+
 {% endblock %}

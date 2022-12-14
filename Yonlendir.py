@@ -1,8 +1,8 @@
 from urllib.request import urlopen
-
 import simplejson
 from elasticsearch import Elasticsearch
 from flask import Flask, render_template, request
+from pymongo import MongoClient
 
 from back_end.get_timer.Timer import Timer
 
@@ -11,6 +11,8 @@ app = Flask(__name__)
 solr_url = 'http://localhost:8983/solr/papers/select?'
 elastic_url = Elasticsearch('http://localhost:9200/papers/')
 timerr = Timer()
+
+mongodb_client = MongoClient('localhost', 27017, username='username', password='password')
 
 
 @app.route("/", methods=["GET", "POST"])
