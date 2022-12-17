@@ -8,7 +8,7 @@ from back_end.get_timer.Timer import Timer
 
 app = Flask(__name__)
 
-solr_url = 'http://localhost:8983/solr/papers/select?'
+solr_url = 'http://localhost:8983/solr/wos/select?'
 elastic_url = Elasticsearch('http://localhost:9200/papers/')
 timerr = Timer()
 
@@ -19,28 +19,27 @@ mongodb_client = MongoClient('localhost', 27017, username='username', password='
 def index():
     my_title = "Full Text Search"
     solr_array, es_array = [0.0] * 6, [0.0] * 6
-    solr_time, solr_count_results, solr_results = [None, None, None]
+    solr_sec, solr_time, solr_count_results, solr_results = [None, None, None, None]
     es_time, es_count_results, es_results = [None, None, None]
-    fields = "keywords"
+    fields = "Aims_and_Scope"
     rowlist = [{'name': '10'}, {'name': '25'}, {'name': '50'}, {'name': '100'}]
     if request.method == "POST":
         search_word = request.form["searchWord"]
-        rowsize = request.form.get('row_select')
-        field_keywords = request.form.get("keywords", False)
-        field_abstract = request.form.get("abstract", False)
-        field_domain = request.form.get("domain", False)
+        #rowsize = request.form.get('row_select')
+        #field_keywords = request.form.get("keywords", False)
+        #field_abstract = request.form.get("abstract", False)
+        #field_domain = request.form.get("domain", False)
 
-        if field_keywords == "True":
-            fields = "keywords"
-        if field_abstract == "True":
-            fields = "Abstract"
-        if field_domain == "True":
-            fields = "Domain"
+        #if field_keywords == "True":
+           # fields = "keywords"
+        #if field_abstract == "True":
+            #fields = "Abstract"
+        #if field_domain == "True":
+            #fields = "Domain"
 
-        es_time, es_count_results, es_results = elastic_search(fields, search_word, rowsize)
-        solr_time, solr_count_results, solr_results = solr_search(fields, search_word, rowsize)
-
-
+        #es_time, es_count_results, es_results = elastic_search(fields, search_word, "10")
+        solr_time, solr_count_results, solr_results = solr_search(fields, search_word, "10")
+        solr_sec = float((solr_time / 1000) % 60)
         # for i in range(6):
         #     solr_time, solr_count_results, solr_results = SolrSearch(fields, search_word, rowsize)
         #     es_time, es_count_results, es_results = ElasticSearch(fields, search_word, rowsize)
@@ -51,8 +50,7 @@ def index():
         #       "ES Average:" + array_average(es_array))
 
     return render_template('index.html', my_title=my_title, numresults=solr_count_results, results=solr_results,
-                           timeFin=solr_time, es_count_results=es_count_results, es_results=es_results,
-                           es_finTime=es_time, rowlist=rowlist)
+                           timeFin=solr_sec)
 
 
 @app.route('/general/about_us')

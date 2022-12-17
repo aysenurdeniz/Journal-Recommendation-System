@@ -67,3 +67,8 @@ or
 - *nav_a* özelliğinin yanında {{ ... }} arasında belirtilen şartı sağlaması durumunda *nav_a_active* stili de eklenmektedir.
 
 ---
+- **float** tipindeki değerleri anlamlı ifade sınırı ile yazma formatı:
+
+```
+{{ '%0.2f'|format(timeFin|float) }}
+```

@@ -22,6 +22,10 @@
                     <input type="text" name="searchWord" class="form-control"
                            placeholder="Journal Name, Frequency, Aims and Scope or Indexing and Abstracting ...">
                     <button class="btn btn-primary" type="button" aria-expanded="false">Search</button>
+                    <a class="btn btn-outline-light" data-bs-toggle="collapse" href="#advanced-search" role="button"
+                       aria-expanded="false" aria-controls="advanced-search">
+                        Advanced Search
+                    </a>
 
                     <!--<select class="form-select" name="row_select">
                         <option selected>Select Row Size</option>
@@ -156,75 +160,57 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-12 p-3 position-relative">
-                <div class="position-absolute bottom-0 end-0">
-                    <a class="link-light" data-bs-toggle="collapse" href="#advanced-search" role="button"
-                       aria-expanded="false" aria-controls="advanced-search">
-                        Advanced Search
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-6">
-                {% if results and results|length > 0 %}
+            <div class="col-lg-12 row p-3">
                 {% if numresults is not none %}
-                <p class="col-sm-12 alert alert-danger text-center"><b>Number of Data: </b>{{ numresults }}&emsp;<b>
-                    Time: </b>{{timeFin}}</p>
-                {% endif %}
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Keywords</th>
-                        <th>Domain</th>
-                        <th>Area</th>
-                        <th>Abstract</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for document in results %}
-                    <tr>
-                        <td>{% if document['keywords']%}{{ document['keywords'][0]}}{% endif %}</td>
-                        <td>{% if document['Domain']%}{{ document['Domain'][0] }}{% endif %}
-                        </td>
-                        <td>{% if document['area']%}{{ document['area'][0] }}{% endif %}
-                        </td>
-                        <td>{% if document['Abstract']%}{{ document['Abstract'][0] }}{% endif %}</td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-                {% endif %}
-            </div>
-            <div class="col-sm-6">
-                {% if es_results and es_results|length > 0 %}
-                {% if es_count_results is not none %}
-                <p class="alert alert-danger text-center"><b>Number of Data: </b>{{ es_count_results
-                    }}&emsp;<b>Time: </b>{{es_finTime}}</p>
-                {% endif %}
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Keywords</th>
-                        <th>Domain</th>
-                        <th>Area</th>
-                        <th>Abstract</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for hit in es_results%}
-                    <tr>
-                        <td>{% if hit['_source']['keywords']%}{{ hit['_source']['keywords'] }}{% endif %}</td>
-                        <td>{% if hit['_source']['Domain']%}{{ hit['_source']['Domain'] }}{% endif %}</td>
-                        <td>{% if hit['_source']['area']%}{{ hit['_source']['area'] }}{% endif %}</td>
-                        <td>{% if hit['_source']['Abstract']%}{{ hit['_source']['Abstract'] }}{% endif %}</td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                <p class="text-white text-left">Approximately {{ numresults }} results found
+                    ({{'%0.2f'|format(timeFin|float)}}
+                    seconds)</p>
                 {% endif %}
             </div>
         </div>
+        <!-- <div class="col-sm-6">
+            {% if es_results and es_results|length > 0 %}
+            {% if es_count_results is not none %}
+            <p class="alert alert-danger text-center"><b>Number of Data: </b>{{ es_count_results
+                }}&emsp;<b>Time: </b>{{es_finTime}}</p>
+            {% endif %}
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Keywords</th>
+                    <th>Domain</th>
+                    <th>Area</th>
+                    <th>Abstract</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for hit in es_results%}
+                <tr>
+                    <td>{% if hit['_source']['keywords']%}{{ hit['_source']['keywords'] }}{% endif %}</td>
+                    <td>{% if hit['_source']['Domain']%}{{ hit['_source']['Domain'] }}{% endif %}</td>
+                    <td>{% if hit['_source']['area']%}{{ hit['_source']['area'] }}{% endif %}</td>
+                    <td>{% if hit['_source']['Abstract']%}{{ hit['_source']['Abstract'] }}{% endif %}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div> -->
+    </div>
+</div>
+<div class="container p-3">
+    <div class="row">
+        {% if results and results|length > 0 %}
+        {% for document in results %}
+        <div class="col-lg-12 border-bottom">
+            <a href="{% if document['Journal_Website']%}{{ document['Journal_Website'][0]}}{% endif %}">
+                <p>{% if document['Journal_Name']%}{{ document['Journal_Name'][0]}}{% endif %}</p>
+            </a>
+            <p><b>Aims and Scope:</b><i> {% if document['Aims_and_Scope']%}{{ document['Aims_and_Scope'][0]}}{% endif %}</i></p>
+            <p><b>Indexing and Abstracting:</b> {% if document['Indexing_and_Abstracting']%}{{ document['Indexing_and_Abstracting'][0]}}{% endif %}</p>
+        </div>
+        {% endfor %}
+        {% endif %}
     </div>
 </div>
 
