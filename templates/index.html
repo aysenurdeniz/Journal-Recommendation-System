@@ -19,7 +19,8 @@
                         <input class="form-check-input" type="radio" name="domain" id="domain" value="True"/>
                         <label class="form-check-label" for="domain"> Domain </label>
                     </div> -->
-                    <input type="text" name="searchWord" class="form-control" placeholder="Search Word">
+                    <input type="text" name="searchWord" class="form-control"
+                           placeholder="Journal Name, Frequency, Aims and Scope or Indexing and Abstracting ...">
                     <button class="btn btn-primary" type="button" aria-expanded="false">Search</button>
 
                     <!--<select class="form-select" name="row_select">
@@ -46,38 +47,92 @@
             <div class="collapse" id="advanced-search">
                 <div class=" container p-3">
                     <div class="row">
-                        <div class="col-lg-12">
+                        <div class="col-lg-6">
+                            <div class="input-group row mb-3">
+                                <div class="col-lg-9">
+                                    <input type="text" name="journal_name" class="form-control"
+                                           placeholder="Journal Name">
+                                </div>
+                                <div class="col-lg-3">
+                                    <select class="form-select" id="operation-select-journal-name">
+                                        <option value="1">AND</option>
+                                        <option value="2">OR</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
                             <div class="input-group mb-3">
-                                <label class="input-group-text" for="field-select-1">Field</label>
-                                <select class="form-select" id="field-select-1">
-                                    <option selected>Choose...</option>
-                                    <option value="1">Aims and Scope</option>
-                                    <option value="2">Abstracting and Indexing</option>
-                                    <option value="3">Collections</option>
+                                <input type="text" name="publisher" class="form-control col-4"
+                                       placeholder="Publisher">
+                                <select class="form-select" id="operation-select-publisher">
+                                    <option value="1">AND</option>
+                                    <option value="2">OR</option>
                                 </select>
-                                <input type="text" name="otherWord1" class="form-control col-4"
-                                       placeholder="Other Word 1">
-                                <label class="input-group-text" for="operation-select-1">Operation</label>
-                                <select class="form-select" id="operation-select-1">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="input-group mb-3">
+                                <input type="text" name="aims-and-scope" class="form-control col-4"
+                                       placeholder="Aims and Scope">
+                                <select class="form-select" id="operation-select-aims-and-scope">
+                                    <option value="1">AND</option>
+                                    <option value="2">OR</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="input-group mb-3">
+                                <input type="text" name="indexing-and-abstracting" class="form-control col-4"
+                                       placeholder="Indexing and Abstracting">
+                                <select class="form-select" id="operation-select-indexing-and-abstracting">
+                                    <option value="1">AND</option>
+                                    <option value="2">OR</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="input-group mb-3">
+                                <input type="text" name="e-ıssn" class="form-control col-4"
+                                       placeholder="ISSN / eISSN">
+                                <label class="input-group-text" for="operation-select-e-ıssn">Operation</label>
+                                <select class="form-select" id="operation-select-e-ıssn">
                                     <option selected>Choose...</option>
                                     <option value="1">AND</option>
                                     <option value="2">OR</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="col-lg-12">
+                        <div class="col-lg-6">
                             <div class="input-group mb-3">
-                                <label class="input-group-text" for="field-select-2">Field</label>
-                                <select class="form-select" id="field-select-2">
+                                <input type="text" name="collection" class="form-control col-4"
+                                       placeholder="Web of Science Core Collection">
+                                <label class="input-group-text" for="operation-select-collection">Operation</label>
+                                <select class="form-select" id="operation-select-collection">
                                     <option selected>Choose...</option>
-                                    <option value="1">Aims and Scope</option>
-                                    <option value="2">Abstracting and Indexing</option>
-                                    <option value="3">Collections</option>
+                                    <option value="1">AND</option>
+                                    <option value="2">OR</option>
                                 </select>
-                                <input type="text" name="otherWord2" class="form-control col-4"
-                                       placeholder="Other Word 2">
-                                <label class="input-group-text" for="operation-select-2">Operation</label>
-                                <select class="form-select" id="operation-select-2">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="input-group mb-3">
+                                <input type="text" name="wos-indexes" class="form-control"
+                                       placeholder="Additional Web of Science Indexes">
+                                <label class="input-group-text" for="operation-select-wos-indexes">Operation</label>
+                                <select class="form-select" id="operation-select-wos-indexes">
+                                    <option selected>Choose...</option>
+                                    <option value="1">AND</option>
+                                    <option value="2">OR</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="input-group mb-3">
+                                <input type="text" name="frequency" class="form-control col-4"
+                                       placeholder="Publication Frequency">
+                                <label class="input-group-text" for="operation-select-frequency">Operation</label>
+                                <select class="form-select" id="operation-select-frequency">
                                     <option selected>Choose...</option>
                                     <option value="1">AND</option>
                                     <option value="2">OR</option>
@@ -95,12 +150,7 @@
                                 </select>
                                 <input type="text" name="otherWord3" class="form-control col-4"
                                        placeholder="Other Word 3">
-                                <label class="input-group-text" for="operation-select-3">Operation</label>
-                                <select class="form-select" id="operation-select-3">
-                                    <option selected>Choose...</option>
-                                    <option value="1">AND</option>
-                                    <option value="2">OR</option>
-                                </select>
+
                             </div>
                         </div>
                     </div>
