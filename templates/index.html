@@ -26,7 +26,6 @@
                        aria-expanded="false" aria-controls="advanced-search">
                         Advanced Search
                     </a>
-
                     <!--<select class="form-select" name="row_select">
                         <option selected>Select Row Size</option>
                         {% for o in rowlist %}
@@ -160,13 +159,6 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-12 pt-1 pr-5">
-                {% if numresults is not none %}
-                <p class="text-white text-left">Approximately {{ numresults }} results found
-                    ({{'%0.2f'|format(timeFin|float)}}
-                    seconds)</p>
-                {% endif %}
-            </div>
         </div>
         <!-- <div class="col-sm-6">
             {% if es_results and es_results|length > 0 %}
@@ -201,6 +193,20 @@
 <div class="container p-3">
     <div class="row">
         {% if results and results|length > 0 %}
+        <div class="col-10 border-bottom">
+            {% if numresults is not none %}
+            <p class="text-secondary"><i>Approximately {{ numresults }} results found
+                ({{'%0.2f'|format(timeFin|float)}}
+                seconds)</i></p>
+            {% endif %}
+        </div>
+        <div class="col">
+            <!--<label class="form-select-text" for="sort-by">Sort By: </label> -->
+            <select class="form-select" id="sort-by">
+                <option value="1">Relevancy</option>
+                <option value="2">Rating</option>
+            </select>
+        </div>
         {% for document in results %}
         <div class="col-lg-12 p-2 border-bottom">
             <a class="results-title"
@@ -209,7 +215,7 @@
             </a>
             <p class="results-aas">
                 <b>Aims and Scope:</b>
-                <i> {% if document['Aims_and_Scope']%}{{ document['Aims_and_Scope'][0]}}{% endif %}</i>
+                {% if document['Aims_and_Scope']%}{{ document['Aims_and_Scope'][0]}}{% endif %}
             </p>
             <p class="results-iaa">
                 <b>Indexing and Abstracting:</b>
@@ -220,7 +226,8 @@
             </p>
         </div>
         <!-- Modal -->
-        <div class="modal fade" id="read-more{{ document.id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        <div class="modal fade" id="read-more{{ document.id }}" data-bs-backdrop="static" data-bs-keyboard="false"
+             tabindex="-1"
              aria-labelledby="read-more" aria-hidden="true">
             <div class="modal-dialog modal-xl modal-dialog-centered">
                 <div class="modal-content" role="document">
@@ -243,21 +250,25 @@
                         </p>
                         <p>
                             <b>Web of Science Core Collection: </b>
-                            {% if document['Web_of_Science_Core_Collection']%}{{ document['Web_of_Science_Core_Collection'][0]}}{% endif %}
+                            {% if document['Web_of_Science_Core_Collection']%}{{
+                            document['Web_of_Science_Core_Collection'][0]}}{% endif %}
                         </p>
                         <p>
                             <b>Additional Web of Science Indexes: </b>
-                            {% if document['Additional_Web_of_Science_Indexes']%}{{ document['Additional_Web_of_Science_Indexes'][0]}}{% endif %}
+                            {% if document['Additional_Web_of_Science_Indexes']%}{{
+                            document['Additional_Web_of_Science_Indexes'][0]}}{% endif %}
                         </p>
                         <p>
                             <b>Journal Website:</b>
-                            <a href="{% if document['Journal_Website']%}{{ document['Journal_Website'][0]}}{% endif %}" target="_blank">
+                            <a href="{% if document['Journal_Website']%}{{ document['Journal_Website'][0]}}{% endif %}"
+                               target="_blank">
                                 {% if document['Journal_Website']%}{{ document['Journal_Website'][0]}}{% endif %}
                             </a>
                         </p>
                         <p>
                             <b>Publication Frequency: </b>
-                            {% if document['Publication_Frequency']%}{{ document['Publication_Frequency'][0]}}{% endif %}
+                            {% if document['Publication_Frequency']%}{{ document['Publication_Frequency'][0]}}{% endif
+                            %}
                         </p>
                         <p>
                             <b>Aims and Scope: </b>
