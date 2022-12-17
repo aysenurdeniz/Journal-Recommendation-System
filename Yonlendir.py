@@ -19,10 +19,10 @@ mongodb_client = MongoClient('localhost', 27017, username='username', password='
 def index():
     my_title = "Full Text Search"
     solr_array, es_array = [0.0] * 6, [0.0] * 6
-    solr_sec, solr_time, solr_count_results, solr_results = [None, None, None, None]
+    solr_sec, solr_time, solr_count_results, solr_results, results = [None, None, None, None, None]
     es_time, es_count_results, es_results = [None, None, None]
     fields = "Aims_and_Scope"
-    rowlist = [{'name': '10'}, {'name': '25'}, {'name': '50'}, {'name': '100'}]
+
     if request.method == "POST":
         search_word = request.form["searchWord"]
         #rowsize = request.form.get('row_select')
@@ -40,6 +40,7 @@ def index():
         #es_time, es_count_results, es_results = elastic_search(fields, search_word, "10")
         solr_time, solr_count_results, solr_results = solr_search(fields, search_word, "10")
         solr_sec = float((solr_time / 1000) % 60)
+
         # for i in range(6):
         #     solr_time, solr_count_results, solr_results = SolrSearch(fields, search_word, rowsize)
         #     es_time, es_count_results, es_results = ElasticSearch(fields, search_word, rowsize)
