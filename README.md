@@ -72,3 +72,25 @@ or
 ```
 {{ '%0.2f'|format(timeFin|float) }}
 ```
+
+---
+- Dinamik model için contenti içeren id'lerin unique olması gerekir.
+- Bu proje için **read-more{{ document.id }}** yapısı kullanılabilir. Döngü içerisinde her içeriğin document id değeri unique bir yapıya sahiptir. 
+``` html
+{% for document in results %}
+<p class="read-more">
+   <a data-bs-toggle="modal" data-bs-target="#read-more{{ document.id }}">Read More</a>
+</p>
+   
+<!-- Modal -->
+<div class="modal fade" id="read-more{{ document.id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+             aria-labelledby="read-more" aria-hidden="true">
+   <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content" role="document">
+        ...
+        </div>
+   </div>
+</div>
+{% endfor %}
+```
+---
