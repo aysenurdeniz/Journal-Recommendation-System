@@ -1,9 +1,10 @@
 from urllib.request import urlopen
 import simplejson
 from elasticsearch import Elasticsearch
-from flask import Flask, render_template, request
-from pymongo import MongoClient
-
+from flask import Flask, render_template, request, flash, redirect, url_for
+from flask_login import login_required, logout_user
+import os
+import psycopg2
 from back_end.get_timer.Timer import Timer
 
 app = Flask(__name__)
@@ -12,43 +13,42 @@ solr_url = 'http://localhost:8983/solr/wos/select?'
 elastic_url = Elasticsearch('http://localhost:9200/papers/')
 timerr = Timer()
 
-mongodb_client = MongoClient('localhost', 27017, username='username', password='password')
-
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     my_title = "Full Text Search"
-    solr_array, es_array = [0.0] * 6, [0.0] * 6
-    solr_sec, solr_time, solr_count_results, solr_results, results = [None, None, None, None, None]
-    es_time, es_count_results, es_results = [None, None, None]
-    fields = "Aims_and_Scope"
+    # solr_array, es_array = [0.0] * 6, [0.0] * 6
+    # solr_sec, solr_time, solr_count_results, solr_results, results = [None, None, None, None, None]
+    # es_time, es_count_results, es_results = [None, None, None]
+    fields = "*"
+    search_word = "*"
 
     if request.method == "POST":
+        fields = "Aims_and_Scope"
         search_word = request.form["searchWord"]
-        #rowsize = request.form.get('row_select')
-        #field_keywords = request.form.get("keywords", False)
-        #field_abstract = request.form.get("abstract", False)
-        #field_domain = request.form.get("domain", False)
+        # rowsize = request.form.get('row_select')
+        # field_keywords = request.form.get("keywords", False)
+        # field_abstract = request.form.get("abstract", False)
+        # field_domain = request.form.get("domain", False)
 
-        #if field_keywords == "True":
-           # fields = "keywords"
-        #if field_abstract == "True":
-            #fields = "Abstract"
-        #if field_domain == "True":
-            #fields = "Domain"
+        # if field_keywords == "True":
+        # fields = "keywords"
+        # if field_abstract == "True":
+        # fields = "Abstract"
+        # if field_domain == "True":
+        # fields = "Domain"
 
-        #es_time, es_count_results, es_results = elastic_search(fields, search_word, "10")
-        solr_time, solr_count_results, solr_results = solr_search(fields, search_word, "10")
-        solr_sec = float((solr_time / 1000) % 60)
-
-        # for i in range(6):
-        #     solr_time, solr_count_results, solr_results = SolrSearch(fields, search_word, rowsize)
-        #     es_time, es_count_results, es_results = ElasticSearch(fields, search_word, rowsize)
-        #     solr_array[i] = solr_time
-        #     es_array[i] = es_time
-        #
-        # print("Solr Average:" + array_average(solr_array) + "\n" +
-        #       "ES Average:" + array_average(es_array))
+        # es_time, es_count_results, es_results = elastic_search(fields, search_word, "10")
+    solr_time, solr_count_results, solr_results = solr_search(fields, search_word, "10")
+    solr_sec = float((solr_time / 1000) % 60)
+    # for i in range(6):
+    #     solr_time, solr_count_results, solr_results = SolrSearch(fields, search_word, rowsize)
+    #     es_time, es_count_results, es_results = ElasticSearch(fields, search_word, rowsize)
+    #     solr_array[i] = solr_time
+    #     es_array[i] = es_time
+    #
+    # print("Solr Average:" + array_average(solr_array) + "\n" +
+    #       "ES Average:" + array_average(es_array))
 
     return render_template('index.html', my_title=my_title, numresults=solr_count_results, results=solr_results,
                            timeFin=solr_sec)
@@ -64,9 +64,39 @@ def contact():
     return render_template('/general/contact.html')
 
 
-@app.route('/user/login', methods=['GET','POST'])
+@app.route('/user/login', methods=['GET', 'POST'])
 def login():
-    return render_template('/user/login.html')
+    error = None
+    next = request.args.get('next')
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        # if authenticate(app.config['AUTH_SERVER'], username, password):
+        #     user = User.query.filter_by(username=username).first()
+        #     if user:
+        #         if login_user(DbUser(user)):
+        #             # do stuff
+        #             flash("You have logged in")
+        #             return redirect(next or url_for('index', error=error))
+        error = "Login failed"
+    return render_template('login.html', login=True, next=next, error=error)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have logged out')
+    return redirect(url_for('login'))
+
+
+def get_db_connection():
+    con_postgres = psycopg2.connect(host='localhost',
+                                    database='recommendation',
+                                    user=os.environ['user'],
+                                    password=os.environ['password'])
+    return con_postgres
 
 
 def array_average(arr):
@@ -91,6 +121,7 @@ def solr_search(fields, search_word, row_size):
     :return: int, response, document
     """
     timerr.start_time()
+    # defType=dismax iken qf ile istenilen fieldlerin hepsinde arama işlemi gerçekleştirilebilir.
     response = simplejson.load(urlopen("{}rows={}&q={}:{}".format(solr_url, row_size, fields, search_word)))
     finish_time = timerr.finish_time()
     return finish_time, response['response']['numFound'], response['response']['docs']
