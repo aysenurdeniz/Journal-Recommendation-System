@@ -48,7 +48,7 @@ or
 - static dizini ihtiyaca göre özel olarak da konumlandırılabilir.
 
 ---
-- Navbar'da aktif sayfayının linkini renklendirmek için **<li>** taginin class özelliği şu şekillerde yazılabilir.
+- Navbar'da aktif sayfayının linkini renklendirmek için **a** taginin class özelliği şu şekillerde yazılabilir.
 
 ``` html
 <li class="nav-item">
