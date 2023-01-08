@@ -193,14 +193,14 @@
 <div class="container p-3">
     <div class="row">
         {% if results and results|length > 0 %}
-        <div class="col-10 border-bottom">
+        <div class="col-lg-10 border-bottom">
             {% if numresults is not none %}
             <p class="text-secondary"><i>Approximately {{ numresults }} results found
                 ({{'%0.2f'|format(timeFin|float)}}
                 seconds)</i></p>
             {% endif %}
         </div>
-        <div class="col">
+        <div class="col-lg-2">
             <!--<label class="form-select-text" for="sort-by">Sort By: </label> -->
             <select class="form-select" id="sort-by" about="Sort by">
                 <option value="1"> Sort by relevancy</option>
@@ -208,7 +208,7 @@
             </select>
         </div>
         {% for document in results %}
-        <div class="col-lg-12 p-2 border-bottom">
+        <div class="col-lg-8 p-2 border-bottom">
             <a class="results-title"
                href="{% if document['Journal_Website']%}{{ document['Journal_Website'][0]}}{% endif %}" target="_blank">
                 <p>{% if document['Journal_Name']%}{{ document['Journal_Name'][0]}}{% endif %}</p>
@@ -221,10 +221,26 @@
                 <b>Indexing and Abstracting:</b>
                 {% if document['Indexing_and_Abstracting']%}{{ document['Indexing_and_Abstracting'][0]}}{% endif %}
             </p>
+        </div>
+        <div class="col-lg-3 p-2 border-bottom">
+            <ul class="rate-area">
+                <input type="radio" id="5-star" name="rating" value="5" checked/><label for="5-star" title="Amazing">5
+                stars</label>
+                <input type="radio" id="4-star" name="rating" value="4"/><label for="4-star" title="Good">4
+                stars</label>
+                <input type="radio" id="3-star" name="rating" value="3"/><label for="3-star" title="Average">3
+                stars</label>
+                <input type="radio" id="2-star" name="rating" value="2"/><label for="2-star" title="Not Good">2
+                stars</label>
+                <input type="radio" id="1-star" name="rating" value="1"/><label for="1-star" title="Bad">1 star</label>
+            </ul>
+
             <p class="read-more">
                 <a href="/" data-bs-toggle="modal" data-bs-target="#read-more{{ document.id }}">Read More</a>
             </p>
         </div>
+
+
         <!-- Modal -->
         <div class="modal fade" id="read-more{{ document.id }}" data-bs-backdrop="static" data-bs-keyboard="false"
              tabindex="-1"

@@ -66,21 +66,21 @@ def contact():
 
 @app.route('/user/login', methods=['GET', 'POST'])
 def login():
-    error = None
-    next = request.args.get('next')
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-
-        # if authenticate(app.config['AUTH_SERVER'], username, password):
-        #     user = User.query.filter_by(username=username).first()
-        #     if user:
-        #         if login_user(DbUser(user)):
-        #             # do stuff
-        #             flash("You have logged in")
-        #             return redirect(next or url_for('index', error=error))
-        error = "Login failed"
-    return render_template('login.html', login=True, next=next, error=error)
+    # error = None
+    # next = request.args.get('next')
+    # if request.method == 'POST':
+    #     username = request.form['username']
+    #     password = request.form['password']
+    #
+    #     # if authenticate(app.config['AUTH_SERVER'], username, password):
+    #     #     user = User.query.filter_by(username=username).first()
+    #     #     if user:
+    #     #         if login_user(DbUser(user)):
+    #     #             # do stuff
+    #     #             flash("You have logged in")
+    #     #             return redirect(next or url_for('index', error=error))
+    #     error = "Login failed"
+    return render_template('/user/login.html')
 
 
 @app.route('/logout')
