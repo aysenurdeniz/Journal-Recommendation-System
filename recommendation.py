@@ -67,6 +67,7 @@ def text_preprocessing(field):
     df[field] = df[field].apply(lambda x: " ".join([Word(word).lemmatize() for word in x.split()]))
     return df[field]
 
+
 text_preprocessing("Aims and Scope")
 
 
@@ -87,7 +88,7 @@ similarity_matrix = linear_kernel(X_tf_idf_word, X_tf_idf_word)
 similarity_matrix
 
 # df index mapping
-mapping = pd.Series(df.index, index=df["Aims and Scope"])
+mapping = pd.Series(df.index, index=df["Journal Name"])
 mapping
 
 
@@ -105,7 +106,7 @@ def recommend_word_based_on_plot(word_input):
     return df["Aims and Scope"].iloc[df_indices]
 
 
-movie_index = mapping["nan"]
+movie_index = mapping["ACI STRUCTURAL JOURNAL"]
 # get similarity values with other movies
 # similarity_score is the list of index and similarity matrix
 similarity_score = list(enumerate(similarity_matrix[movie_index]))
@@ -116,7 +117,7 @@ similarity_score = similarity_score[1:15]
 # return movie names using the mapping series
 df_indices = [i[0] for i in similarity_score]
 
-df.iloc[df_indices]
+df.iloc[df_indices]["Aims and Scope"]
 
 recommend_word_based_on_plot("den")
 
@@ -196,6 +197,132 @@ plt.show()
 
 wordcloud.to_file("wc_sablon.png")
 
+# Count Vectors
+# ----------------
+
+# Count Vectors: frekans temsiller
+# TF-IDF Vectors: normalize edilmiş frekans temsiller
+# Word Embeddings (Word2Vec, GloVe, BERT vs)
+
+# Neye göre count vektör işlemi yapılabilir:
+
+# 1. words
+# kelimelerin nümerik temsilleridir
+
+# 2. characters
+# karakterlerin numerik temsilleridir
+
+# 3. ngram
+a = """Bu örneği anlaşılabilmesi için daha uzun bir metin üzerinden göstereceğim.
+N-gram'lar birlikte kullanılan kelimelerin kombinasyolarını gösterir ve feature üretmek için kullanılır"""
+
+TextBlob(a).ngrams(3)
+
+# Count Vectors
+
+from sklearn.feature_extraction.text import CountVectorizer
+
+# corpus dört farklı birim olarak düşünülebilir
+corpus = ['big data',
+          'search']
+
+# word frekans
+vectorizer = CountVectorizer()
+X_c = vectorizer.fit_transform(df)
+
+vectorizer.get_feature_names_out()
+# unique olacak şekilde kelimeleri listeler ve bunlar sütun isimleri olur
+# ['and', 'document', 'first', 'is', 'one', 'second', 'the', 'third', 'this']
+
+X_c.toarray()
+# vektörel hali - words bazında
+# [[0, 1, 1, 1, 0, 0, 1, 0, 1],
+#  [0, 2, 0, 1, 0, 1, 1, 0, 1],
+#  [1, 0, 0, 1, 1, 0, 1, 1, 1],
+#  [0, 1, 1, 1, 0, 0, 1, 0, 1]]
+
+
+# n-gram frekans
+
+# ngram_range ile yapılar oluşturulur.
+# ngram_range=(2, 2) -> 2 şer kelimelik yapılar oluşturma işlemi yapılır
+vectorizer2 = CountVectorizer(analyzer='word', ngram_range=(2, 2))
+X_n = vectorizer2.fit_transform(df)
+vectorizer2.get_feature_names_out()
+# ['and this', 'document is', 'first document', 'is the', 'is this',
+#        'second document', 'the first', 'the second', 'the third',
+#        'third one', 'this document', 'this is', 'this the']
+
+X_n.toarray()
+
+vectorizer = CountVectorizer()
+X_count = vectorizer.fit_transform(X_n)
+
+vectorizer.get_feature_names_out()[10:15]
+X_count.toarray()[10:15]
+
+
+# Logistic Regression
+# ---------------------
+
+y = df["Aims and Scope"]  # bağımlı değişken
+X = df["Journal Name"]  # bağımsız değişken
+
+log_model = LogisticRegression().fit(X_tf_idf_word, y)
+
+cross_val_score(log_model,
+                X_tf_idf_word,
+                y,
+                scoring="accuracy",
+                cv=5).mean()
+
+new_search = pd.Series("big data")
+
+# yeni gelen search için de yukarıdaki işlemler (vektör counts) uygulanır
+new_review = TfidfVectorizer().fit(X).transform(new_search)
+
+# Orijinal veri setinde herhangi bir yorumu sorma işlemi yapılmak istenirse
+random_review = pd.Series(df["Aims and Scope"].sample(1).values)
+new_review = TfidfVectorizer().fit(X).transform(random_review)
+log_model.predict(new_review)
+
+
+
+# Random Forests
+# --------------
+# TF-IDF Word-Level
+rf_model = RandomForestClassifier().fit(X_tf_idf_word, y)
+cross_val_score(rf_model, X_tf_idf_word, y, cv=5, n_jobs=-1).mean()
+# 0.8413021363173957
+
+
+
+# Hiperparametre Optimizasyonu
+# -----------------------------
+rf_model = RandomForestClassifier(random_state=17)
+
+rf_params = {"max_depth": [8, None],
+             "max_features": [7, "auto"],
+             "min_samples_split": [2, 5, 8],
+             "n_estimators": [100, 200]}
+
+# Olası kombinasyonlardan en iyisini bulmak için GridSearch'e bakılır
+rf_best_grid = GridSearchCV(rf_model,
+                            rf_params,
+                            cv=5,
+                            n_jobs=-1,
+                            verbose=1).fit(X_count, y)
+
+rf_best_grid.best_param
+
+rf_final = rf_model.set_params(**rf_best_grid.best_params_, random_state=17).fit(X_count, y)
+# hatayı tekrar değerlendirme
+cross_val_score(rf_final, X_count, y, cv=5, n_jobs=-1).mean()
+
+
+
+
+
 # ****************************
 # 3. Sentiment Analysis
 # ****************************
@@ -249,138 +376,3 @@ df["sentiment_label"] = LabelEncoder().fit_transform(df["sentiment_label"])
 y = df["sentiment_label"]  # bağımlı değişken
 X = df["reviewText"]  # bağımsız değişken
 # Bağımsız değişkenler numerik olmadığından makine öğrenmesi modelinden geçirmeden önce vektörel işlemlerden geçirilmesi gerekir
-
-# Count Vectors
-# ----------------
-
-# Count Vectors: frekans temsiller
-# TF-IDF Vectors: normalize edilmiş frekans temsiller
-# Word Embeddings (Word2Vec, GloVe, BERT vs)
-
-# Neye göre count vektör işlemi yapılabilir:
-
-# 1. words
-# kelimelerin nümerik temsilleridir
-
-# 2. characters
-# karakterlerin numerik temsilleridir
-
-# 3. ngram
-a = """Bu örneği anlaşılabilmesi için daha uzun bir metin üzerinden göstereceğim.
-N-gram'lar birlikte kullanılan kelimelerin kombinasyolarını gösterir ve feature üretmek için kullanılır"""
-
-TextBlob(a).ngrams(3)
-
-# Count Vectors
-
-from sklearn.feature_extraction.text import CountVectorizer
-
-# corpus dört farklı birim olarak düşünülebilir
-corpus = ['This is the first document.',
-          'This document is the second document.',
-          'And this is the third one.',
-          'Is this the first document?']
-
-# word frekans
-vectorizer = CountVectorizer()
-X_c = vectorizer.fit_transform(df)
-
-vectorizer.get_feature_names_out()
-# unique olacak şekilde kelimeleri listeler ve bunlar sütun isimleri olur
-# ['and', 'document', 'first', 'is', 'one', 'second', 'the', 'third', 'this']
-
-X_c.toarray()
-# vektörel hali - words bazında
-# [[0, 1, 1, 1, 0, 0, 1, 0, 1],
-#  [0, 2, 0, 1, 0, 1, 1, 0, 1],
-#  [1, 0, 0, 1, 1, 0, 1, 1, 1],
-#  [0, 1, 1, 1, 0, 0, 1, 0, 1]]
-
-
-# n-gram frekans
-
-# ngram_range ile yapılar oluşturulur.
-# ngram_range=(2, 2) -> 2 şer kelimelik yapılar oluşturma işlemi yapılır
-vectorizer2 = CountVectorizer(analyzer='word', ngram_range=(2, 2))
-X_n = vectorizer2.fit_transform(df)
-vectorizer2.get_feature_names_out()
-# ['and this', 'document is', 'first document', 'is the', 'is this',
-#        'second document', 'the first', 'the second', 'the third',
-#        'third one', 'this document', 'this is', 'this the']
-
-X_n.toarray()
-
-vectorizer = CountVectorizer()
-X_count = vectorizer.fit_transform(X_n)
-
-vectorizer.get_feature_names_out()[10:15]
-X_count.toarray()[10:15]
-
-# Logistic Regression
-# ---------------------
-
-log_model = LogisticRegression().fit(X_tf_idf_word, y)
-
-cross_val_score(log_model,
-                X_tf_idf_word,
-                y,
-                scoring="accuracy",
-                cv=5).mean()
-# 0.830111902339776 başarı elde edildi
-
-new_review = pd.Series("this product is great")
-# new_review = pd.Series("look at that shit very bad")
-# new_review = pd.Series("it was good but I am sure that it fits me")
-
-# yeni gelen review içinde yukarıdaki işlemler (vektör counts) uygulanır
-new_review = TfidfVectorizer().fit(X).transform(new_review)
-
-# Yorum neg mi pos mi tahmit etme işlemi
-log_model.predict(new_review)
-
-# Orijinal veri setinde herhangi bir yorumu sorma işlemi yapılmak istenirse
-random_review = pd.Series(df["reviewText"].sample(1).values)
-new_review = TfidfVectorizer().fit(X).transform(random_review)
-log_model.predict(new_review)
-
-# Random Forests
-# --------------
-# Feture üretme yöntemeleri ile en iyi özelliği nasıl üretebiliriz
-# Count Vectors
-rf_model = RandomForestClassifier().fit(X_count, y)
-cross_val_score(rf_model, X_count, y, cv=5, n_jobs=-1).mean()  # n_jobs=-1 - bütün işlemcileri kullan
-# 0.8392675483214649
-
-# TF-IDF Word-Level
-rf_model = RandomForestClassifier().fit(X_tf_idf_word, y)
-cross_val_score(rf_model, X_tf_idf_word, y, cv=5, n_jobs=-1).mean()
-# 0.8413021363173957
-
-# TF-IDF N-GRAM
-rf_model = RandomForestClassifier().fit(X_tf_idf_ngram, y)
-cross_val_score(rf_model, X_tf_idf_ngram, y, cv=5, n_jobs=-1).mean()
-# 0.7861648016276703
-
-
-# Hiperparametre Optimizasyonu
-# -----------------------------
-
-rf_model = RandomForestClassifier(random_state=17)
-
-rf_params = {"max_depth": [8, None],
-             "max_features": [7, "auto"],
-             "min_samples_split": [2, 5, 8],
-             "n_estimators": [100, 200]}
-
-# Olası kombinasyonlardan en iyisini bulmak için GridSearch'e bakılır
-rf_best_grid = GridSearchCV(rf_model,
-                            rf_params,
-                            cv=5,
-                            n_jobs=-1,
-                            verbose=1).fit(X_count, y)
-
-rf_best_grid.best_param
-
-rf_final = rf_model.set_params(**rf_best_grid.best_params_, random_state=17).fit(X_count, y)
-# hatayı tekrar değerlendirme
-cross_val_score(rf_final, X_count, y, cv=5, n_jobs=-1).mean()
