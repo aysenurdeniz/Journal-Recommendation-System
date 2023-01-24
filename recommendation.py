@@ -106,24 +106,10 @@ def recommend_word_based_on_plot(word_input):
     return df["Aims and Scope"].iloc[df_indices]
 
 
-movie_index = mapping["ACI STRUCTURAL JOURNAL"]
-# get similarity values with other movies
-# similarity_score is the list of index and similarity matrix
-similarity_score = list(enumerate(similarity_matrix[movie_index]))
-# sort in descending order the similarity score of movie inputted with all the other movies
-similarity_score = sorted(similarity_score, key=lambda x: x[1], reverse=True)
-# Get the scores of the 15 most similar movies. Ignore the first movie.
-similarity_score = similarity_score[1:15]
-# return movie names using the mapping series
-df_indices = [i[0] for i in similarity_score]
-
-df.iloc[df_indices]["Aims and Scope"]
-
-recommend_word_based_on_plot("den")
+recommend_word_based_on_plot("ACI STRUCTURAL JOURNAL")
 
 
-
-
+# df.iloc[df_indices]["Aims and Scope"]
 
 # ****************************
 # 2. Text Visualization
