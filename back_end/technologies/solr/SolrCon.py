@@ -7,6 +7,7 @@ class SolrCon:
         self.solr_url = urlopen(solr_url)
 
     def print_response(self):
+
         response = json.load(self.solr_url)
         numresults = response['response']['numFound']
         results = response['response']['docs']

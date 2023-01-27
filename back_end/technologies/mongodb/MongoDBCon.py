@@ -8,9 +8,8 @@ class MongoDBCon:
         self.my_col = self.my_db["local"]
 
     def find_user(self, my_query):
-        result = self.my_col.find(my_query)
-        for i in result:
-            print(i)
+        result = self.my_col.find(my_query).limit(1)
+        return result
 
     def update(self, new_values):
         self.my_col.update(new_values)
@@ -25,12 +24,3 @@ class MongoDBCon:
         result = self.my_col.find({"$text": {"$search": search_text}})
         for doc in result:
             print(doc)
-
-
-myquery = {"user_name": "evelyn.gay"}
-
-mongoObject = MongoDBCon(myquery)
-# mongoObject.index_for_search()
-# mongoObject.index_for_search("araceli.wilder")
-mongoObject.find_user()
-

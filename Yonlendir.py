@@ -1,11 +1,19 @@
+import uuid
 from urllib.request import urlopen
+
+from flask_mail import Mail, Message
+
 import simplejson
 from elasticsearch import Elasticsearch
 from flask import Flask, render_template, request, flash, redirect, url_for
-from flask_login import login_required, logout_user
+from flask_login import login_required, logout_user, login_user
 import os
 import psycopg2
+from pymongo.auth import authenticate
+
 from back_end.get_timer.Timer import Timer
+from back_end.technologies.mongodb.MongoDBCon import MongoDBCon
+from back_end.user.User import DbUser
 
 app = Flask(__name__)
 
@@ -64,23 +72,40 @@ def contact():
     return render_template('/general/contact.html')
 
 
+@app.route('/user/forgot_password')
+def forgot_password():
+    #recipient = request.form['recipient']
+    try:
+        msg = Message(subject= "New Password - JRS",
+                      body= "Hello!\n This new password:{}".format(uuid.uuid4()),
+                      sender="anurdenizz@gmail.com",
+                      recipients=["anurdenizz@gmail.com"]
+                      )
+        Mail.send(msg)
+        return 'Mail successfully send!'
+
+    except Exception as e:
+        return str(e)
+
+    return render_template('/user/forgot_password.html')
+
+
 @app.route('/user/login', methods=['GET', 'POST'])
 def login():
-    # error = None
-    # next = request.args.get('next')
-    # if request.method == 'POST':
-    #     username = request.form['username']
-    #     password = request.form['password']
-    #
-    #     # if authenticate(app.config['AUTH_SERVER'], username, password):
-    #     #     user = User.query.filter_by(username=username).first()
-    #     #     if user:
-    #     #         if login_user(DbUser(user)):
-    #     #             # do stuff
-    #     #             flash("You have logged in")
-    #     #             return redirect(next or url_for('index', error=error))
-    #     error = "Login failed"
     return render_template('/user/login.html')
+
+
+def login_sign():
+    error = None
+    next = request.args.get('next')
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        if authenticate(app.config['AUTH_SERVER'], username, password):
+            return redirect('/user/profile.html')
+        else:
+            return redirect(next or url_for('index', error=error))
 
 
 @app.route('/logout')
@@ -141,8 +166,9 @@ def elastic_search(fields, search_word, row_size):
     return finish_time, response['hits']['total']['value'], response['hits']['hits']
 
 
-def pagination(page=1, total=100, per_page=5):
-    offset = total - ((page - 1) * per_page) + 1
+def get_user(query):
+    con = MongoDBCon()
+    return con.find_user(query)
 
 
 if __name__ == '__main__':
