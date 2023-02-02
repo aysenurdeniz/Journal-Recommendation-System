@@ -11,8 +11,11 @@ class MongoDBCon:
         result = self.my_col.find(my_query).limit(1).next()
         return result
 
-    def update(self, new_values):
-        self.my_col.update(new_values)
+    def updateOne(self, old_values, new_values):
+        self.my_col.update_one(old_values, new_values)
+
+    def updateMany(self, old_values, new_values):
+        self.my_col.update_many(old_values, new_values)
 
     def insert(self, my_query):
         self.my_col.insert_one(my_query)
@@ -20,7 +23,9 @@ class MongoDBCon:
     def delete(self, my_query):
         self.my_col.delete_one(my_query)
 
-    def text_searching(self, search_text):
-        result = self.my_col.find({"$text": {"$search": search_text}})
+    def text_searching(self, index_name, field, search_text):
+        self.my_col.create_index([(field, index_name)], default_language='english')
+        result = self.my_col.find({"${}".format(index_name): {"$search": search_text}})
         for doc in result:
             print(doc)
+
