@@ -1,11 +1,13 @@
 import uuid
 from urllib.request import urlopen
 
+import bcrypt as bcrypt
+import pymongo
 from flask_mail import Mail, Message
 
 import simplejson
 from elasticsearch import Elasticsearch
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request, flash, redirect, url_for, session
 from flask_login import login_required, logout_user, login_user
 import os
 import psycopg2
@@ -72,7 +74,97 @@ def contact():
     return render_template('/general/contact.html')
 
 
-@app.route('/user/forgot_password')
+# -------------------------- Login Operations ---------------------------------
+# Ref: https://medium.com/codex/simple-registration-login-system-with-flask-mongodb-and-bootstrap-8872b16ef915
+
+client = pymongo.MongoClient("mongodb://localhost:27017/")
+db = client.get_database('local')
+records = db.register
+
+
+@app.route('/user/login', methods=['GET', 'POST'])
+def login():
+    message = 'Please login to your account'
+    if "email" in session:
+        return redirect(url_for("logged_in"))
+
+    if request.method == "POST":
+        user_name = request.form.get("user_name")
+        password = request.form.get("password")
+
+        user_name_found = records.find_one({"user_name": user_name})
+        if user_name_found:
+            user_name_val = user_name_found['user_name']
+            passwordcheck = user_name_found['password']
+
+            if bcrypt.checkpw(password.encode('utf-8'), passwordcheck):
+                session["user_name"] = user_name_val
+                return redirect(url_for('logged_in'))
+            else:
+                if "user_name" in session:
+                    return redirect(url_for("logged_in"))
+                message = 'Wrong password'
+                return render_template('/user/login.html', message=message)
+        else:
+            message = 'user name not found'
+            return render_template('/user/login.html', message=message)
+    return render_template('/user/login.html', message=message)
+
+
+@app.route('/user/profile', methods=["POST", "GET"])
+def logged_in():
+    if "user_name" in session:
+        user_name = session["user_name"]
+        return render_template('/user/profile.html', user_name=user_name)
+    else:
+        return redirect(url_for("login"))
+
+
+@app.route("/user/logout", methods=["POST", "GET"])
+def logout():
+    if "user_name" in session:
+        session.pop("user_name", None)
+        return render_template("/user/logout.html")
+    else:
+        return render_template('index.html')
+
+
+@app.route("/user/register", methods=["POST", "GET"])
+def register():
+    message = ''
+    if "user_name" in session:
+        return redirect(url_for("logged_in"))
+    if request.method == "POST":
+        user = request.form.get("user_name")
+        email = request.form.get("email")
+
+        password1 = request.form.get("password1")
+        password2 = request.form.get("password2")
+
+        user_found = records.find_one({"user_name": user})
+        email_found = records.find_one({"email": email})
+        if user_found:
+            message = 'There already is a user by that name'
+            return render_template('index.html', message=message)
+        if email_found:
+            message = 'This email already exists in database'
+            return render_template('index.html', message=message)
+        if password1 != password2:
+            message = 'Passwords should match!'
+            return render_template('index.html', message=message)
+        else:
+            hashed = bcrypt.hashpw(password2.encode('utf-8'), bcrypt.gensalt())
+            user_input = {'user_name': user, 'email': email, 'password': hashed}
+            records.insert_one(user_input)
+
+            user_data = records.find_one({"email": email})
+            new_email = user_data['email']
+
+            return render_template('/user/profile.html', email=new_email)
+    return render_template('index.html')
+
+
+@app.route('/user/forgot_password', methods=["POST", "GET"])
 def forgot_password():
     #recipient = request.form['recipient']
     try:
@@ -89,39 +181,7 @@ def forgot_password():
 
     return render_template('/user/forgot_password.html')
 
-
-@app.route('/user/login', methods=['GET', 'POST'])
-def login():
-    return render_template('/user/login.html')
-
-
-def login_sign():
-    error = None
-    next = request.args.get('next')
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-
-        if authenticate(app.config['AUTH_SERVER'], username, password):
-            return redirect('/user/profile.html')
-        else:
-            return redirect(next or url_for('index', error=error))
-
-
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    flash('You have logged out')
-    return redirect(url_for('login'))
-
-
-def get_db_connection():
-    con_postgres = psycopg2.connect(host='localhost',
-                                    database='recommendation',
-                                    user=os.environ['user'],
-                                    password=os.environ['password'])
-    return con_postgres
+# -----------------------------------------------------------
 
 
 def array_average(arr):
@@ -164,11 +224,6 @@ def elastic_search(fields, search_word, row_size):
     response = elastic_url.search(size=row_size, track_total_hits=True, query={"match": {fields: search_word}})
     finish_time = timerr.finish_time()
     return finish_time, response['hits']['total']['value'], response['hits']['hits']
-
-
-def get_user(query):
-    con = MongoDBCon()
-    return con.find_user(query)
 
 
 if __name__ == '__main__':
