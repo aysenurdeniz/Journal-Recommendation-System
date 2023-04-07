@@ -23,6 +23,10 @@ solr_url = 'http://localhost:8983/solr/wos/select?'
 elastic_url = Elasticsearch('http://localhost:9200/papers/')
 timerr = Timer()
 
+client = pymongo.MongoClient("mongodb://localhost:27017/")
+db = client.get_database('local')
+records = db["local"]
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -77,10 +81,6 @@ def contact():
 # -------------------------- Login Operations ---------------------------------
 # Ref: https://medium.com/codex/simple-registration-login-system-with-flask-mongodb-and-bootstrap-8872b16ef915
 
-client = pymongo.MongoClient("mongodb://localhost:27017/")
-db = client.get_database('local')
-records = db.register
-
 
 @app.route('/user/login', methods=['GET', 'POST'])
 def login():
@@ -91,8 +91,9 @@ def login():
     if request.method == "POST":
         user_name = request.form.get("user_name")
         password = request.form.get("password")
-
+        print("username: {}, password: {}".format(user_name, password)) #check
         user_name_found = records.find_one({"user_name": user_name})
+        print(user_name_found) #check
         if user_name_found:
             user_name_val = user_name_found['user_name']
             passwordcheck = user_name_found['password']
@@ -104,7 +105,7 @@ def login():
                 if "user_name" in session:
                     return redirect(url_for("logged_in"))
                 message = 'Wrong password'
-                return render_template('/user/login.html', message=message)
+                return render_template('login.html', message=message)
         else:
             message = 'user name not found'
             return render_template('/user/login.html', message=message)
@@ -168,8 +169,9 @@ def register():
 def forgot_password():
     #recipient = request.form['recipient']
     try:
+        new_pass = uuid.uuid4()
         msg = Message(subject= "New Password - JRS",
-                      body= "Hello!\n This new password:{}".format(uuid.uuid4()),
+                      body= "Hello!\n This new password:{}".format(new_pass),
                       sender="anurdenizz@gmail.com",
                       recipients=["anurdenizz@gmail.com"]
                       )
