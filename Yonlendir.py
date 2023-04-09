@@ -18,6 +18,7 @@ from back_end.technologies.mongodb.MongoDBCon import MongoDBCon
 from back_end.user.User import DbUser
 
 app = Flask(__name__)
+app.secret_key = "testing"
 
 solr_url = 'http://localhost:8983/solr/wos/select?'
 elastic_url = Elasticsearch('http://localhost:9200/papers/')
@@ -26,6 +27,22 @@ timerr = Timer()
 client = pymongo.MongoClient("mongodb://localhost:27017/")
 db = client.get_database('local')
 records = db["local"]
+
+password = "deneme"
+password_1 = records.find({"user_name":"esdeniz"}).next()
+hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+bcrypt.checkpw(password.encode('utf-8'), password_1.get("password"))
+
+
+user_input = {'user_name': "anurdeniz", 'email': "anurdenizz@gmail.com", 'password': hashed}
+records.insert_one(user_input)
+user_input2 = {'user_name': "esdeniz", 'email': "esdeniz@gmail.com", 'password': hashed}
+records.insert_one(user_input2)
+user_input3 = {'user_name': "ahmeter", 'email': "ahmeter@gmail.com", 'password': hashed}
+records.insert_one(user_input3)
+user_input4 = {'user_name': "omerturk", 'email': "omerturk@gmail.com", 'password': hashed}
+records.insert_one(user_input4)
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -82,49 +99,49 @@ def contact():
 # Ref: https://medium.com/codex/simple-registration-login-system-with-flask-mongodb-and-bootstrap-8872b16ef915
 
 
-@app.route('/user/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     message = 'Please login to your account'
     if "email" in session:
         return redirect(url_for("logged_in"))
 
     if request.method == "POST":
-        user_name = request.form.get("user_name")
-        password = request.form.get("password")
-        print("username: {}, password: {}".format(user_name, password)) #check
-        user_name_found = records.find_one({"user_name": user_name})
-        print(user_name_found) #check
-        if user_name_found:
-            user_name_val = user_name_found['user_name']
-            passwordcheck = user_name_found['password']
+        email = request.form.get("login_email")
+        password = request.form.get("login_password")
+        print("email: {}, password: {}".format(email, password))  # check
+        user_found = records.find_one({"email": email})
+        print(user_found)  # check
+        if user_found:
+            email_val = user_found.get("email")
+            passwordcheck = user_found.get("password")
 
             if bcrypt.checkpw(password.encode('utf-8'), passwordcheck):
-                session["user_name"] = user_name_val
+                session["email"] = email_val
                 return redirect(url_for('logged_in'))
             else:
-                if "user_name" in session:
+                if "email" in session:
                     return redirect(url_for("logged_in"))
                 message = 'Wrong password'
                 return render_template('login.html', message=message)
         else:
-            message = 'user name not found'
+            message = 'email not found'
             return render_template('/user/login.html', message=message)
     return render_template('/user/login.html', message=message)
 
 
 @app.route('/user/profile', methods=["POST", "GET"])
 def logged_in():
-    if "user_name" in session:
-        user_name = session["user_name"]
-        return render_template('/user/profile.html', user_name=user_name)
+    if "email" in session:
+        email = session["email"]
+        return render_template('/user/profile.html', email=email)
     else:
         return redirect(url_for("login"))
 
 
 @app.route("/user/logout", methods=["POST", "GET"])
 def logout():
-    if "user_name" in session:
-        session.pop("user_name", None)
+    if "email" in session:
+        session.pop("email", None)
         return render_template("/user/logout.html")
     else:
         return render_template('index.html')
@@ -133,16 +150,16 @@ def logout():
 @app.route("/user/register", methods=["POST", "GET"])
 def register():
     message = ''
-    if "user_name" in session:
+    if "email" in session:
         return redirect(url_for("logged_in"))
     if request.method == "POST":
-        user = request.form.get("user_name")
+        user_name = request.form.get("user_name")
         email = request.form.get("email")
 
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
 
-        user_found = records.find_one({"user_name": user})
+        user_found = records.find_one({"user_name": user_name})
         email_found = records.find_one({"email": email})
         if user_found:
             message = 'There already is a user by that name'
@@ -155,23 +172,23 @@ def register():
             return render_template('index.html', message=message)
         else:
             hashed = bcrypt.hashpw(password2.encode('utf-8'), bcrypt.gensalt())
-            user_input = {'user_name': user, 'email': email, 'password': hashed}
+            user_input = {'user_name': user_name, 'email': email, 'password': hashed}
             records.insert_one(user_input)
 
             user_data = records.find_one({"email": email})
             new_email = user_data['email']
 
             return render_template('/user/profile.html', email=new_email)
-    return render_template('index.html')
+    return render_template('login')
 
 
 @app.route('/user/forgot_password', methods=["POST", "GET"])
 def forgot_password():
-    #recipient = request.form['recipient']
+    # recipient = request.form['recipient']
     try:
         new_pass = uuid.uuid4()
-        msg = Message(subject= "New Password - JRS",
-                      body= "Hello!\n This new password:{}".format(new_pass),
+        msg = Message(subject="New Password - JRS",
+                      body="Hello!\n This new password:{}".format(new_pass),
                       sender="anurdenizz@gmail.com",
                       recipients=["anurdenizz@gmail.com"]
                       )
@@ -182,6 +199,7 @@ def forgot_password():
         return str(e)
 
     return render_template('/user/forgot_password.html')
+
 
 # -----------------------------------------------------------
 
