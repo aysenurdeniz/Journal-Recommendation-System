@@ -18,7 +18,7 @@ from back_end.technologies.mongodb.MongoDBCon import MongoDBCon
 from back_end.user.User import DbUser
 
 app = Flask(__name__)
-app.secret_key = "testing"
+app.secret_key = os.urandom(20)
 
 solr_url = 'http://localhost:8983/solr/wos/select?'
 elastic_url = Elasticsearch('http://localhost:9200/papers/')
@@ -27,22 +27,6 @@ timerr = Timer()
 client = pymongo.MongoClient("mongodb://localhost:27017/")
 db = client.get_database('local')
 records = db["local"]
-
-password = "deneme"
-password_1 = records.find({"user_name":"esdeniz"}).next()
-hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-
-bcrypt.checkpw(password.encode('utf-8'), password_1.get("password"))
-
-
-user_input = {'user_name': "anurdeniz", 'email': "anurdenizz@gmail.com", 'password': hashed}
-records.insert_one(user_input)
-user_input2 = {'user_name': "esdeniz", 'email': "esdeniz@gmail.com", 'password': hashed}
-records.insert_one(user_input2)
-user_input3 = {'user_name': "ahmeter", 'email': "ahmeter@gmail.com", 'password': hashed}
-records.insert_one(user_input3)
-user_input4 = {'user_name': "omerturk", 'email': "omerturk@gmail.com", 'password': hashed}
-records.insert_one(user_input4)
 
 
 @app.route("/", methods=["GET", "POST"])

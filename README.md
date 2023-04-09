@@ -94,3 +94,14 @@ or
 {% endfor %}
 ```
 ---
+
+- İstemci tarafı oturumlarını güvenli tutmak için gizli anahtar istemektedir. 
+
+```app.secret_key = "testing"``` 
+
+- os.urandom(24) ile rastgele bir anahtar da üretilebilir.
+
+```app.secret_key = os.urandom(24)``` 
+
+---
+
