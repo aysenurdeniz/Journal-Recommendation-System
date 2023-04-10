@@ -105,3 +105,14 @@ or
 
 ---
 
+- Html kısmında session'da mevcut kullanıcı kontrolü için aşağıdaki if bloğu kullanılır. Giriş yapmış bir kullanıcı yoksa else bloğu doldurulur.
+
+```
+{% if session.email %}
+...
+{% else %}
+...
+{% endif %}
+```
+
+---
