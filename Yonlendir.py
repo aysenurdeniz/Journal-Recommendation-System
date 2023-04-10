@@ -123,7 +123,7 @@ def logged_in():
         return redirect(url_for("login"))
 
 
-@app.route("/user/logout", methods=["POST", "GET"])
+@app.route("/logout", methods=["POST", "GET"])
 def logout():
     if "email" in session:
         session.pop("email", None)
@@ -137,6 +137,7 @@ def register():
     message = ''
     if "email" in session:
         return redirect(url_for("logged_in"))
+
     if request.method == "POST":
         user_name = request.form.get("user_name")
         email = request.form.get("email")
@@ -163,8 +164,8 @@ def register():
             user_data = records.find_one({"email": email})
             new_email = user_data['email']
 
-            return render_template('/user/profile.html', email=new_email)
-    return render_template('login')
+            return render_template('index.html', email=new_email)
+    return render_template('/user/login.html')
 
 
 @app.route('/user/forgot_password', methods=["POST", "GET"])

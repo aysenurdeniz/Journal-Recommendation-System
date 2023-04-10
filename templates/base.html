@@ -31,21 +31,21 @@
                        href="{{ url_for('contact') }}">Contact</a>
                 </li>
                 {% if session.email %}
-                <div class="btn-group">
-                    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false"> {{ session.email }}
-                    </button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="/user/profile">Profile</a>
-                        <a class="dropdown-item" href="#">Comments</a>
+                <li class="nav-item dropdown">
+                    <a class="nav_a dropdown-toggle {{ 'nav_a_active' if request.path == '/user/profile' }}" href="/user/profile" role="button" data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        {{ session.email }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="/user/profile">Profile</a></li>
+                        <li><a class="dropdown-item" href="#">Comments</a></li>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a>
-                    </div>
-                </div>
+                        <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+                    </ul>
+                </li>
                 {% else %}
                 <li class="nav-item">
-                    <a class="nav_a {{ 'nav_a_active' if request.path == '/user/login' }}" href="{{ url_for('login') }}"
+                    <a class="nav_a {{ 'nav_a_active' if (request.path == '/login') or (request.path == '/logout') }}" href="{{ url_for('login') }}"
                        target="_blank">Login</a>
                 </li>
                 {% endif %}
