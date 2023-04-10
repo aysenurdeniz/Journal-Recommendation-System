@@ -85,7 +85,7 @@ def contact():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    message = 'Please login to your account'
+    message = ''
     if "email" in session:
         return redirect(url_for("logged_in"))
 
@@ -106,7 +106,7 @@ def login():
                 if "email" in session:
                     return redirect(url_for("logged_in"))
                 message = 'Wrong password'
-                return render_template('login.html', message=message)
+                return render_template('/user/login.html', message=message)
         else:
             message = 'email not found'
             return render_template('/user/login.html', message=message)
@@ -117,7 +117,8 @@ def login():
 def logged_in():
     if "email" in session:
         email = session["email"]
-        return render_template('/user/profile.html', email=email)
+        user_found = records.find_one({"email": email})
+        return render_template('base.html', email=email, user_name=user_found["user_name"])
     else:
         return redirect(url_for("login"))
 
@@ -126,12 +127,12 @@ def logged_in():
 def logout():
     if "email" in session:
         session.pop("email", None)
-        return render_template("/user/logout.html")
+        return render_template("/user/login.html")
     else:
         return render_template('index.html')
 
 
-@app.route("/user/register", methods=["POST", "GET"])
+@app.route("/register", methods=["POST", "GET"])
 def register():
     message = ''
     if "email" in session:
@@ -147,13 +148,13 @@ def register():
         email_found = records.find_one({"email": email})
         if user_found:
             message = 'There already is a user by that name'
-            return render_template('index.html', message=message)
+            return render_template('/user/login.html', message=message)
         if email_found:
             message = 'This email already exists in database'
-            return render_template('index.html', message=message)
+            return render_template('/user/login.html', message=message)
         if password1 != password2:
             message = 'Passwords should match!'
-            return render_template('index.html', message=message)
+            return render_template('/user/login.html', message=message)
         else:
             hashed = bcrypt.hashpw(password2.encode('utf-8'), bcrypt.gensalt())
             user_input = {'user_name': user_name, 'email': email, 'password': hashed}
