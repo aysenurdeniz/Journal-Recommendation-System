@@ -5,5 +5,38 @@
 {% endblock %}
 
 {% block body_content %}
-
+{% if user %}
+<div class="container">
+    <div class="row">
+        <form class="col-lg-6" id="profile_update" method="post">
+            <div class="form-group">
+                <label for="UpdateFullName">Full name</label>
+                <input name="full_name" class="form-control" id="UpdateFullName"
+                       value="{{ user['full_name'] }}">
+            </div>
+            <div class="form-group">
+                <label for="UpdateUserName">User name</label>
+                <input name="user_name" class="form-control" id="UpdateUserName"
+                       value="{{ user['user_name'] }}">
+            </div>
+            <div class="form-group">
+                <label for="UpdateDepartment">Department</label>
+                <input name="department" class="form-control" id="UpdateDepartment"
+                       value="{{ user['department'] }}">
+            </div>
+            <div class="form-group">
+                <label for="UpdateEmail">Email address</label>
+                <input name="email" class="form-control" id="UpdateEmail" value="{{ user['email'] }}" disabled>
+            </div>
+            <div class="form-group disabled">
+                <label for="UpdatePassword">Password</label>
+                <input type="password" name="password1" class="form-control" id="UpdatePassword"
+                       placeholder="********" disabled>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-primary" formaction="/register"> Update </button>
+        </form>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

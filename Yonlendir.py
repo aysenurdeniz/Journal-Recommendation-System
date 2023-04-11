@@ -92,15 +92,13 @@ def login():
     if request.method == "POST":
         email = request.form.get("login_email")
         password = request.form.get("login_password")
-        print("email: {}, password: {}".format(email, password))  # check
         user_found = records.find_one({"email": email})
-        print(user_found)  # check
         if user_found:
             email_val = user_found.get("email")
-            passwordcheck = user_found.get("password")
-
-            if bcrypt.checkpw(password.encode('utf-8'), passwordcheck):
+            password_check = user_found.get("password")
+            if bcrypt.checkpw(password.encode('utf-8'), password_check):
                 session["email"] = email_val
+                session["full_name"] = user_found["full_name"]
                 return redirect(url_for('logged_in'))
             else:
                 if "email" in session:
@@ -108,7 +106,7 @@ def login():
                 message = 'Wrong password'
                 return render_template('/user/login.html', message=message)
         else:
-            message = 'email not found'
+            message = 'Email not found'
             return render_template('/user/login.html', message=message)
     return render_template('/user/login.html', message=message)
 
@@ -117,8 +115,17 @@ def login():
 def logged_in():
     if "email" in session:
         email = session["email"]
-        user_found = records.find_one({"email": email})
-        return render_template('base.html', email=email, user_name=user_found["user_name"])
+        return render_template("base.html", email=email)
+    else:
+        return redirect(url_for("login"))
+
+
+@app.route('/profile', methods=["POST", "GET"])
+def profile():
+    if "email" in session:
+        email = session["email"]
+        user = records.find_one({"email": email})
+        return render_template("/user/profile.html", user=user)
     else:
         return redirect(url_for("login"))
 
@@ -141,6 +148,8 @@ def register():
     if request.method == "POST":
         user_name = request.form.get("user_name")
         email = request.form.get("email")
+        full_name = request.form.get("full_name")
+        department = request.form.get("department")
 
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
@@ -158,7 +167,8 @@ def register():
             return render_template('/user/login.html', message=message)
         else:
             hashed = bcrypt.hashpw(password2.encode('utf-8'), bcrypt.gensalt())
-            user_input = {'user_name': user_name, 'email': email, 'password': hashed}
+            user_input = {'user_name': user_name, 'full_name': full_name, 'email': email, 'password': hashed,
+                          'department': department, 'role': 'user'}
             records.insert_one(user_input)
 
             user_data = records.find_one({"email": email})
