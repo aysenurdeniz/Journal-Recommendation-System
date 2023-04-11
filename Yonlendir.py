@@ -114,8 +114,7 @@ def login():
 @app.route('/user/profile', methods=["POST", "GET"])
 def logged_in():
     if "email" in session:
-        email = session["email"]
-        return render_template("base.html", email=email)
+        return redirect(url_for("profile"))
     else:
         return redirect(url_for("login"))
 
@@ -125,7 +124,8 @@ def profile():
     if "email" in session:
         email = session["email"]
         user = records.find_one({"email": email})
-        return render_template("/user/profile.html", user=user)
+        all_user = records.find({})
+        return render_template("/user/profile.html", user=user, all_user=all_user)
     else:
         return redirect(url_for("login"))
 
@@ -198,6 +198,9 @@ def forgot_password():
 
 
 # -----------------------------------------------------------
+def findall():
+    all_user = records.find({})
+    return all_user
 
 
 def array_average(arr):

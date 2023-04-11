@@ -8,34 +8,62 @@
 {% if user %}
 <div class="container">
     <div class="row">
-        <form class="col-lg-6" id="profile_update" method="post">
-            <div class="form-group">
-                <label for="UpdateFullName">Full name</label>
-                <input name="full_name" class="form-control" id="UpdateFullName"
-                       value="{{ user['full_name'] }}">
-            </div>
-            <div class="form-group">
-                <label for="UpdateUserName">User name</label>
-                <input name="user_name" class="form-control" id="UpdateUserName"
-                       value="{{ user['user_name'] }}">
-            </div>
-            <div class="form-group">
-                <label for="UpdateDepartment">Department</label>
-                <input name="department" class="form-control" id="UpdateDepartment"
-                       value="{{ user['department'] }}">
-            </div>
-            <div class="form-group">
-                <label for="UpdateEmail">Email address</label>
-                <input name="email" class="form-control" id="UpdateEmail" value="{{ user['email'] }}" disabled>
-            </div>
-            <div class="form-group disabled">
-                <label for="UpdatePassword">Password</label>
-                <input type="password" name="password1" class="form-control" id="UpdatePassword"
-                       placeholder="********" disabled>
-            </div>
-            <br>
-            <button type="submit" class="btn btn-primary" formaction="/register"> Update </button>
-        </form>
+        <div class="col-lg-6 border-left">
+            <form id="profile_update" method="post">
+                <div class="form-group">
+                    <label for="UpdateFullName">Full name</label>
+                    <input name="full_name" class="form-control" id="UpdateFullName"
+                           value="{{ user['full_name'] }}">
+                </div>
+                <div class="form-group">
+                    <label for="UpdateUserName">User name</label>
+                    <input name="user_name" class="form-control" id="UpdateUserName"
+                           value="{{ user['user_name'] }}">
+                </div>
+                <div class="form-group">
+                    <label for="UpdateDepartment">Department</label>
+                    <input name="department" class="form-control" id="UpdateDepartment"
+                           value="{{ user['department'] }}">
+                </div>
+                <div class="form-group">
+                    <label for="UpdateEmail">Email address</label>
+                    <input name="email" class="form-control" id="UpdateEmail" value="{{ user['email'] }}" disabled>
+                </div>
+                <div class="form-group disabled">
+                    <label for="UpdatePassword">Password</label>
+                    <input type="password" name="password1" class="form-control" id="UpdatePassword"
+                           value="*********" disabled>
+                </div>
+                <br>
+                <button type="submit" class="btn btn-primary" formaction="/register"> Update</button>
+            </form>
+        </div>
+        <!-- {% if user['role'] == 'admin' %} -->
+        <div class="col-lg-6">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Full Name</th>
+                    <th scope="col">User Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Department</th>
+                    <th scope="col">Role</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in all_user %}
+                <tr>
+                    <td>{{item.full_name}}</td>
+                    <td>{{item.user_name}}</td>
+                    <td>{{item.email}}</td>
+                    <td>{{item.department}}</td>
+                    <td>{{item.role}}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!--{% endif %}-->
     </div>
 </div>
 {% endif %}

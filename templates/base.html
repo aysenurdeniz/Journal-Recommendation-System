@@ -32,7 +32,7 @@
                 </li>
                 {% if session.email %}
                 <li class="nav-item dropdown">
-                    <a class="nav_a dropdown-toggle {{ 'nav_a_active' if request.path == '/profile' }}" href="/profile" role="button" data-bs-toggle="dropdown"
+                    <a class="nav_a dropdown-toggle {{ 'nav_a_active' if request.path == '/profile' }}" href="/profile" data-bs-toggle="dropdown"
                        aria-expanded="false">
                         {{ session.full_name }}
                     </a>
