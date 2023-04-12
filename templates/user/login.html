@@ -6,19 +6,19 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-12 row d-flex justify-content-center p-3">
-            <div class="col-5 border-end" style="align-items: end;">
+            <div class="col-5 border-end">
                 <h2 class="m-2" style="color: #032470;">
                     Welcome!
                 </h2>
                 <p>
-                    <a class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#signin" role="button"
-                       aria-controls="signin" aria-expanded="true">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#signin"
+                            aria-controls="signin" aria-expanded="true">
                         Sign in
-                    </a>
-                    <a class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#signup" role="button"
-                       aria-controls="signup" aria-expanded="false">
+                    </button>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#signup"
+                            aria-controls="signup" aria-expanded="false">
                         Sign up
-                    </a>
+                    </button>
                 </p>
             </div>
             <div class="col-7">
@@ -29,10 +29,10 @@
                 {% endif %}
                 <div class="collapse show" id="signin">
                     <div class="card card-body">
-                        <form action="" method="post">
+                        <form method="post">
                             <div class="form-group">
                                 <label for="InputEmail">Email address</label>
-                                <input name="login_email" class="form-control" id="LoginInputEmail"
+                                <input type="text" name="login_email" class="form-control" id="LoginInputEmail"
                                        placeholder="Enter email">
                             </div>
                             <div class="form-group">
@@ -59,24 +59,25 @@
                         <form id="register" method="post">
                             <div class="form-group">
                                 <label for="InputFullName">Full name</label>
-                                <input name="full_name" class="form-control" id="InputFullName"
+                                <input type="text" name="full_name" class="form-control" id="InputFullName"
                                        placeholder="Enter full name">
                             </div>
                             <div class="form-group">
                                 <label for="InputUserName">User name</label>
-                                <input name="user_name" class="form-control" id="InputUserName"
+                                <input type="text" name="user_name" class="form-control" id="InputUserName"
                                        placeholder="Enter user name">
                                 <small id="userNameHelp" class="form-text text-muted">Please enter your user
                                     name</small>
                             </div>
                             <div class="form-group">
                                 <label for="InputDepartment">Department</label>
-                                <input name="department" class="form-control" id="InputDepartment"
+                                <input type="text" name="department" class="form-control" id="InputDepartment"
                                        placeholder="Enter department">
                             </div>
                             <div class="form-group">
                                 <label for="InputEmail">Email address</label>
-                                <input name="email" class="form-control" id="InputEmail" placeholder="Enter email">
+                                <input type="text" name="email" class="form-control" id="InputEmail"
+                                       placeholder="Enter email">
                                 <small id="emailHelp" class="form-text text-muted">We'll never share your email with
                                     anyone else.</small>
                             </div>

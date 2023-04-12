@@ -9,6 +9,27 @@ and open the templates in the editor.
 */
 
 :root {
+    --blue: #007bff;
+    --indigo: #6610f2;
+    --purple: #6f42c1;
+    --pink: #e83e8c;
+    --red: #dc3545;
+    --orange: #fd7e14;
+    --yellow: #ffc107;
+    --green: #28a745;
+    --teal: #20c997;
+    --cyan: #17a2b8;
+    --white: #fff;
+    --gray: #6c757d;
+    --gray-dark: #343a40;
+    --primary: #5867dd;
+    --secondary: #e1e1ef;
+    --success: #1dc9b7;
+    --info: #5578eb;
+    --warning: #ffb822;
+    --danger: #fd397a;
+    --light: #f8f9fa;
+    --dark: #343a40;
     --color1: #050934;
     --color2: #001A50;
     --color3: #032470;
@@ -18,8 +39,8 @@ and open the templates in the editor.
     --black-rgb: 0, 0, 0;
     --white-rgb: 255, 255, 255;
     --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
-    --body-font-family: Muli, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-    --body-font-size: 12pt;
+    --font-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 /* -------- for Body -------- */
@@ -28,14 +49,18 @@ body {
     padding-bottom: 80px;
     margin: 0px;
     text-decoration: none;
-    font-size: var(--body-font-size);
-    font-family: Calibri;
+    font-size: 0.85rem;
+    font-family: var(--font-sans-serif);
     background: var(--white-rgb);
 }
 
-.login_bg {
+.bg-search {
     background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(22, 22, 22, 0.6)), url("../img/background.jpg") no-repeat;
     background-size: cover;
+}
+
+.form-group, .form-select, input[type=text], input[type=password], .btn, input[type=submit] {
+    font-size: 0.85rem;
 }
 
 /* -------- for Navbar -------- */
@@ -65,6 +90,11 @@ footer {
     width: 100%;
     height: 50px;
     padding: 15px;
+    font-size: 0.70rem;
+    color: black;
+    background: linear-gradient(rgba(225, 225, 225, 0.8), rgba(225, 225, 225, 0.8)), url("../img/background.jpg") no-repeat;
+    background-size: cover;
+    text-decoration: none;
 }
 
 .footer_a {
@@ -73,8 +103,7 @@ footer {
 }
 
 .footer_a:hover {
-    color: var(--color5);
-    text-decoration: none;
+    color: var(--color3);
 }
 
 /* -------- for Results -------- */
@@ -82,7 +111,7 @@ footer {
 .results-title {
     text-decoration: none;
     color: var(--color3);
-    font-size: 20px;
+    font-size: 15px;
     font-weight: bold;
 }
 
@@ -99,50 +128,7 @@ footer {
     text-align: right;
 }
 
-/* -------- for Rating  --------
-ref: https://codepen.io/sidbelbase/pen/RwGZRbL */
-
-.rate-area {
-	float: left;
-	border-style: none;
-}
-
-.rate-area:not(:checked) > input {
-	position: absolute;
-	top: -9999px;
-	clip: rect(0, 0, 0, 0);
-}
-
-.rate-area:not(:checked) > label {
-	float: right;
-	width: 0.8em;
-	overflow: hidden;
-	white-space: nowrap;
-	cursor: pointer;
-	font-size: 180%;
-	color: lightgrey;
-}
-
-.rate-area:not(:checked) > label:before {
-	content: "★";
-}
-
-.rate-area > input:checked ~ label {
-	color: gold;
-}
-
-.rate-area:not(:checked) > label:hover,
-.rate-area:not(:checked) > label:hover ~ label {
-	color: gold;
-}
-
-.rate-area > input:checked + label:hover,
-.rate-area > input:checked + label:hover ~ label,
-.rate-area > input:checked ~ label:hover,
-.rate-area > input:checked ~ label:hover ~ label,
-.rate-area > label:hover ~ input:checked ~ label {
-	color: gold;
-}
+/* -------- for Rating -------- */
 
 
 /* -------- for Pagination -------- */

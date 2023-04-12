@@ -2,160 +2,58 @@
 {% block title %}Journal Recommendation System{% endblock %}
 
 {% block body_content %}
-<div class="login_bg p-3">
+<div class="bg-search p-3">
     <div class="container">
         <div class="row">
-            <div class="input-group">
-                <form class="input-group" action="/" method="post">
-                    <!--<div class="form-check p-3">
-                        <input class="form-check-input" type="radio" name="keywords" id="keywords" value="True"/>
-                        <label class="form-check-label" for="keywords"> Keywords </label>
+            <form class="input-group" action="/" method="post">
+                <!--<div class="form-check p-3">
+                    <input class="form-check-input" type="radio" name="keywords" id="keywords" value="True"/>
+                    <label class="form-check-label" for="keywords"> Keywords </label>
+                </div>
+                <div class="form-check p-3">
+                    <input class="form-check-input" type="radio" name="abstract" id="abstract" value="True"/>
+                    <label class="form-check-label" for="abstract"> Abstract </label>
+                </div>
+                <div class="form-check p-3">
+                    <input class="form-check-input" type="radio" name="domain" id="domain" value="True"/>
+                    <label class="form-check-label" for="domain"> Domain </label>
+                </div> -->
+                <input type="text" name="searchWord" class="form-control"
+                       placeholder="Journal Name, Frequency, Aims and Scope or Indexing and Abstracting ...">
+                <button type="button" class="btn btn-primary" aria-expanded="false">Search</button>
+                <button type="button" class="btn btn-dark" data-bs-toggle="collapse" data-bs-target="#advanced-search"
+                        aria-controls="advanced-search">
+                    Advanced Search
+                </button>
+                <!--<select class="form-select" name="row_select">
+                    <option selected>Select Row Size</option>
+                    {% for o in rowlist %}
+                    <option value="{{ o.name }}">{{ o.name }}</option>
+                    {% endfor %}
+                </select>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <div class="form-check">
+                        <li class="p-3">
+                            <input class="form-check-input" type="checkbox" id="solr" name="solr" value="True"
+                                   checked>
+                            <label class="form-check-label" for="solr"> Solr </label><br>
+                        </li>
+                        <li class="p-3">
+                            <input class="form-check-input" type="checkbox" id="es" name="es" value="True" checked>
+                            <label class="form-check-label" for="es"> Elasticsearch </label><br>
+                        </li>
                     </div>
-                    <div class="form-check p-3">
-                        <input class="form-check-input" type="radio" name="abstract" id="abstract" value="True"/>
-                        <label class="form-check-label" for="abstract"> Abstract </label>
-                    </div>
-                    <div class="form-check p-3">
-                        <input class="form-check-input" type="radio" name="domain" id="domain" value="True"/>
-                        <label class="form-check-label" for="domain"> Domain </label>
-                    </div> -->
-                    <input type="text" name="searchWord" class="form-control"
-                           placeholder="Journal Name, Frequency, Aims and Scope or Indexing and Abstracting ...">
-                    <button class="btn btn-primary" type="button" aria-expanded="false">Search</button>
-                    <a class="btn btn-outline-light" data-bs-toggle="collapse" href="#advanced-search" role="button"
-                       aria-controls="advanced-search">
-                        Advanced Search
-                    </a>
-                    <!--<select class="form-select" name="row_select">
-                        <option selected>Select Row Size</option>
-                        {% for o in rowlist %}
-                        <option value="{{ o.name }}">{{ o.name }}</option>
-                        {% endfor %}
-                    </select>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <div class="form-check">
-                            <li class="p-3">
-                                <input class="form-check-input" type="checkbox" id="solr" name="solr" value="True"
-                                       checked>
-                                <label class="form-check-label" for="solr"> Solr </label><br>
-                            </li>
-                            <li class="p-3">
-                                <input class="form-check-input" type="checkbox" id="es" name="es" value="True" checked>
-                                <label class="form-check-label" for="es"> Elasticsearch </label><br>
-                            </li>
-                        </div>
-                    </ul> -->
-                </form>
-            </div>
+                </ul> -->
+            </form>
             <div class="collapse" id="advanced-search">
                 <div class=" container p-3">
                     <div class="row">
-                        <div class="col-lg-6">
-                            <div class="input-group row mb-3">
-                                <div class="col-lg-9">
-                                    <input type="text" name="journal_name" class="form-control"
-                                           placeholder="Journal Name">
-                                </div>
-                                <div class="col-lg-3">
-                                    <select class="form-select" id="operation-select-journal-name">
-                                        <option value="1">AND</option>
-                                        <option value="2">OR</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="input-group mb-3">
-                                <input type="text" name="publisher" class="form-control col-4"
-                                       placeholder="Publisher">
-                                <select class="form-select" id="operation-select-publisher">
-                                    <option value="1">AND</option>
-                                    <option value="2">OR</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="input-group mb-3">
-                                <input type="text" name="aims-and-scope" class="form-control col-4"
-                                       placeholder="Aims and Scope">
-                                <select class="form-select" id="operation-select-aims-and-scope">
-                                    <option value="1">AND</option>
-                                    <option value="2">OR</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="input-group mb-3">
-                                <input type="text" name="indexing-and-abstracting" class="form-control col-4"
-                                       placeholder="Indexing and Abstracting">
-                                <select class="form-select" id="operation-select-indexing-and-abstracting">
-                                    <option value="1">AND</option>
-                                    <option value="2">OR</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="input-group mb-3">
-                                <input type="text" name="e-ıssn" class="form-control col-4"
-                                       placeholder="ISSN / eISSN">
-                                <label class="input-group-text" for="operation-select-e-ıssn">Operation</label>
-                                <select class="form-select" id="operation-select-e-ıssn">
-                                    <option selected>Choose...</option>
-                                    <option value="1">AND</option>
-                                    <option value="2">OR</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="input-group mb-3">
-                                <input type="text" name="collection" class="form-control col-4"
-                                       placeholder="Web of Science Core Collection">
-                                <label class="input-group-text" for="operation-select-collection">Operation</label>
-                                <select class="form-select" id="operation-select-collection">
-                                    <option selected>Choose...</option>
-                                    <option value="1">AND</option>
-                                    <option value="2">OR</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="input-group mb-3">
-                                <input type="text" name="wos-indexes" class="form-control"
-                                       placeholder="Additional Web of Science Indexes">
-                                <label class="input-group-text" for="operation-select-wos-indexes">Operation</label>
-                                <select class="form-select" id="operation-select-wos-indexes">
-                                    <option selected>Choose...</option>
-                                    <option value="1">AND</option>
-                                    <option value="2">OR</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="input-group mb-3">
-                                <input type="text" name="frequency" class="form-control col-4"
-                                       placeholder="Publication Frequency">
-                                <label class="input-group-text" for="operation-select-frequency">Operation</label>
-                                <select class="form-select" id="operation-select-frequency">
-                                    <option selected>Choose...</option>
-                                    <option value="1">AND</option>
-                                    <option value="2">OR</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-12">
-                            <div class="input-group mb-3">
-                                <label class="input-group-text" for="field-select-3">Field</label>
-                                <select class="form-select" id="field-select-3">
-                                    <option selected>Choose...</option>
-                                    <option value="1">Aims and Scope</option>
-                                    <option value="2">Abstracting and Indexing</option>
-                                    <option value="3">Collections</option>
-                                </select>
-                                <input type="text" name="otherWord3" class="form-control col-4"
-                                       placeholder="Other Word 3">
-
-                            </div>
-                        </div>
+                        <input type="text" name="rating" class="form-control col m-1"
+                               placeholder="Rating">
+                        <input type="text" name="frequency" class="form-control col m-1"
+                               placeholder="Frequency">
+                        <input type="text" name="wos-core" class="form-control col m-1"
+                               placeholder="WoS Core Collection">
                     </div>
                 </div>
             </div>
@@ -222,22 +120,15 @@
                 {% if document['Indexing_and_Abstracting']%}{{ document['Indexing_and_Abstracting'][0]}}{% endif %}
             </p>
         </div>
-        <div class="col-lg-3 p-2 border-bottom">
-            <ul class="rate-area">
-                <input type="radio" id="5-star" name="rating" value="5" checked/><label for="5-star" title="Amazing">5
-                stars</label>
-                <input type="radio" id="4-star" name="rating" value="4"/><label for="4-star" title="Good">4
-                stars</label>
-                <input type="radio" id="3-star" name="rating" value="3"/><label for="3-star" title="Average">3
-                stars</label>
-                <input type="radio" id="2-star" name="rating" value="2"/><label for="2-star" title="Not Good">2
-                stars</label>
-                <input type="radio" id="1-star" name="rating" value="1"/><label for="1-star" title="Bad">1 star</label>
-            </ul>
-
-            <p class="read-more">
+        <div class="col-lg-3 m-2 bg-light">
+            <label class="p-2"> Popularity: 5/10 </label>
+            <div class="progress">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 50%"
+                     aria-valuemin="0" aria-valuemax="100" ></div>
+            </div>
+            <div class="read-more p-2">
                 <a href="/" data-bs-toggle="modal" data-bs-target="#read-more{{ document.id }}">Read More</a>
-            </p>
+            </div>
         </div>
 
 
