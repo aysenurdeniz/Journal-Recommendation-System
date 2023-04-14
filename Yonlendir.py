@@ -1,32 +1,26 @@
-import uuid
 from urllib.request import urlopen
 
 import bcrypt as bcrypt
-import pymongo
-from flask_mail import Mail, Message
 
 import simplejson
 from elasticsearch import Elasticsearch
-from flask import Flask, render_template, request, flash, redirect, url_for, session
-from flask_login import login_required, logout_user, login_user
+from flask import Flask, render_template, request, redirect, url_for, session
 import os
-import psycopg2
-from pymongo.auth import authenticate
 
 from back_end.get_timer.Timer import Timer
+timerr = Timer()
+
 from back_end.technologies.mongodb.MongoDBCon import MongoDBCon
-from back_end.user.User import DbUser
+mongoDBCon = MongoDBCon()
+
+from back_end.mail.ForgotPassword import ForgotPassword
+forgotPassword = ForgotPassword()
 
 app = Flask(__name__)
 app.secret_key = os.urandom(20)
 
 solr_url = 'http://localhost:8983/solr/wos/select?'
 elastic_url = Elasticsearch('http://localhost:9200/papers/')
-timerr = Timer()
-
-client = pymongo.MongoClient("mongodb://localhost:27017/")
-db = client.get_database('local')
-records = db["local"]
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -92,7 +86,7 @@ def login():
     if request.method == "POST":
         email = request.form.get("login_email")
         password = request.form.get("login_password")
-        user_found = records.find_one({"email": email})
+        user_found = mongoDBCon.find_user({"email": email})
         if user_found:
             email_val = user_found.get("email")
             password_check = user_found.get("password")
@@ -123,8 +117,8 @@ def logged_in():
 def profile():
     if "email" in session:
         email = session["email"]
-        user = records.find_one({"email": email})
-        all_user = records.find({})
+        user = mongoDBCon.find_user({"email": email})
+        all_user = mongoDBCon.find_all()
         return render_template("/user/profile.html", user=user, all_user=all_user)
     else:
         return redirect(url_for("login"))
@@ -134,9 +128,9 @@ def profile():
 def logout():
     if "email" in session:
         session.pop("email", None)
-        return render_template("/user/login.html")
+        return redirect(url_for("login"))
     else:
-        return render_template('index.html')
+        return redirect(url_for("index"))
 
 
 @app.route("/register", methods=["POST", "GET"])
@@ -154,8 +148,8 @@ def register():
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
 
-        user_found = records.find_one({"user_name": user_name})
-        email_found = records.find_one({"email": email})
+        user_found = mongoDBCon.find_user({"user_name": user_name})
+        email_found = mongoDBCon.find_user({"email": email})
         if user_found:
             message = 'There already is a user by that name'
             return render_template('/user/login.html', message=message)
@@ -169,38 +163,20 @@ def register():
             hashed = bcrypt.hashpw(password2.encode('utf-8'), bcrypt.gensalt())
             user_input = {'user_name': user_name, 'full_name': full_name, 'email': email, 'password': hashed,
                           'department': department, 'role': 'user'}
-            records.insert_one(user_input)
+            mongoDBCon.insert(user_input)
 
-            user_data = records.find_one({"email": email})
+            user_data = mongoDBCon.find_user({"email": email})
             new_email = user_data['email']
 
             return render_template('index.html', email=new_email)
     return render_template('/user/login.html')
 
 
-@app.route('/user/forgot_password', methods=["POST", "GET"])
+@app.route('/user/forgot_password', methods=["POST"])
 def forgot_password():
-    # recipient = request.form['recipient']
-    try:
-        new_pass = uuid.uuid4()
-        msg = Message(subject="New Password - JRS",
-                      body="Hello!\n This new password:{}".format(new_pass),
-                      sender="anurdenizz@gmail.com",
-                      recipients=["anurdenizz@gmail.com"]
-                      )
-        Mail.send(msg)
-        return 'Mail successfully send!'
-
-    except Exception as e:
-        return str(e)
-
-    return render_template('/user/forgot_password.html')
-
+    return forgotPassword.mail_send()
 
 # -----------------------------------------------------------
-def findall():
-    all_user = records.find({})
-    return all_user
 
 
 def array_average(arr):

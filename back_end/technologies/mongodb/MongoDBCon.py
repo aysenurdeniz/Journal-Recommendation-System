@@ -2,13 +2,16 @@ import pymongo
 
 
 class MongoDBCon:
-    def __init__(self):
-        self.my_client = pymongo.MongoClient("mongodb://localhost:27017/")
-        self.my_db = self.my_client["local"]
-        self.my_col = self.my_db["local"]
+    my_client = pymongo.MongoClient("mongodb://localhost:27017/")
+    my_db = my_client["local"]
+    my_col = my_db["local"]
 
     def find_user(self, my_query):
-        result = self.my_col.find(my_query).limit(1).next()
+        result = self.my_col.find_one(my_query)
+        return result
+
+    def find_all(self):
+        result = self.my_col.find({})
         return result
 
     def updateOne(self, old_values, new_values):
@@ -28,4 +31,3 @@ class MongoDBCon:
         result = self.my_col.find({"${}".format(index_name): {"$search": search_text}})
         for doc in result:
             print(doc)
-
