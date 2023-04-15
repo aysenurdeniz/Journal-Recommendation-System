@@ -2,22 +2,22 @@
 {% block title %} Profile {% endblock %}
 {% block body_content %}
 {% if user %}
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-lg-2 m-2 border-end">
-            <button type="button" class="btn btn-primary m-3" data-bs-toggle="collapse" data-bs-target="#profile"
+        <div class="col-lg-2 border-end m-1">
+            <button type="button" class="btn btn-primary m-2" data-bs-toggle="collapse" data-bs-target="#profile"
                     aria-controls="profile" aria-expanded="true">
                 Profile
             </button>
             {% if user['role'] == 'admin' %}
-            <button type="button" class="btn btn-primary m-3" data-bs-toggle="collapse" data-bs-target="#all-users"
+            <button type="button" class="btn btn-primary m-2" data-bs-toggle="collapse" data-bs-target="#all-users"
                     aria-controls="all-users" aria-expanded="false">
                 All Users
             </button>
             {% endif %}
         </div>
         <div class="col-lg-9 row m-2">
-            <div class="col-lg-6 collapse show border-end" id="profile" >
+            <div class="col-lg-6 collapse show border-end m-2" id="profile">
                 <form id="profile_update" method="post">
                     <div class="form-group">
                         <label for="UpdateFullName">Full name</label>
@@ -49,35 +49,108 @@
                     <button type="submit" class="btn btn-primary" formaction="/update"> Update</button>
                 </form>
             </div>
-            <div class="col-lg-6 collapse" id="all-users">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th scope="col">Full Name</th>
-                        <th scope="col">User Name</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Department</th>
-                        <th scope="col">Role</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for item in all_user %}
-                    <tr>
-                        <td>{{item.full_name}}</td>
-                        <td>{{item.user_name}}</td>
-                        <td>{{item.email}}</td>
-                        <td>{{item.department}}</td>
-                        <td>{{item.role}}</td>
-                        <td>
-                            <button type="submit" class="btn btn-primary" formaction="/profile_update"> Update</button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+            {% for item in all_user %}
+            <div class="col-lg-11 collapse" id="all-users">
+                <div class="col container p-2">
+                    <div class="row p-1 border-bottom">
+                        <div class="col">
+                            Full Name
+                        </div>
+                        <div class="col">
+                            User Name
+                        </div>
+                        <div class="col">
+                            Email
+                        </div>
+                        <div class="col">
+                            Department
+                        </div>
+                        <div class="col">
+                            Role
+                        </div>
+                    </div>
+                    <div class="row p-1">
+                        <div class="col">
+                            <p>
+                                <a href="/profile" data-bs-toggle="modal"
+                                   data-bs-target="#form-{{item.id}}">{{item.full_name}}</a>
+                            </p>
+                        </div>
+                        <div class="col">
+                            <p>{{item.user_name}}</p>
+                        </div>
+                        <div class="col">
+                            <p>{{item.email}}</p>
+                        </div>
+                        <div class="col">
+                            <p>{{item.department}}</p>
+                        </div>
+                        <div class="col">
+                            <p>{{item.role}}</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal -->
+                <div class="modal fade" id="form-{{ item.id }}" data-bs-backdrop="static" data-bs-keyboard="false"
+                     tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-l modal-dialog-centered">
+                        <div class="modal-content" role="document">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-4">Update for User</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post">
+                                    <div class="form-group">
+                                        <label class="m-1" for="UpdateFullName2">Full name</label>
+                                        <input type="text" name="full_name" class="form-control m-1"
+                                               id="UpdateFullName2"
+                                               value="{{item['full_name'] }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="m-1" for="UpdateUserName2">User name</label>
+                                        <input type="text" name="user_name" class="form-control m-1"
+                                               id="UpdateUserName2"
+                                               value="{{item.user_name}}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="m-1" for="UpdateDepartment">Department</label>
+                                        <input type="text" name="department" class="form-control m-1"
+                                               id="UpdateDepartment2"
+                                               value="{{item.department}}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="m-1" for="UpdateEmail2">Email address</label>
+                                        <input type="text" name="email" class="form-control m-1" id="UpdateEmail2"
+                                               value="{{item.email}}"
+                                               disabled>
+                                    </div>
+                                    <div class="form-group disabled">
+                                        <label class="m-1" for="UpdatePassword2">Password</label>
+                                        <input type="password" name="password1" class="form-control m-1"
+                                               id="UpdatePassword2"
+                                               value="*********" disabled>
+                                    </div>
+                                    <br>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary m-1" formaction="/update"> Update
+                                        </button>
+                                        <button type="submit" class="btn btn-danger m-1" formaction="/delete"> Delete
+                                        </button>
+                                        <button type="button" class="btn btn-secondary m-1" data-bs-dismiss="modal">Close
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+            {% endfor %}
         </div>
     </div>
+</div>
 </div>
 {% endif %}
 {% endblock %}
