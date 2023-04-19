@@ -124,7 +124,7 @@
             <label class="p-2"> Popularity: 5/10 </label>
             <div class="progress">
                 <div class="progress-bar bg-success" role="progressbar" style="width: 50%"
-                     aria-valuemin="0" aria-valuemax="100" ></div>
+                     aria-valuemin="0" aria-valuemax="100"></div>
             </div>
             <div class="read-more p-2">
                 <a href="/" data-bs-toggle="modal" data-bs-target="#read-more{{ document.id }}">Read More</a>
@@ -186,6 +186,13 @@
                             {% if document['Indexing_and_Abstracting']%}{{ document['Indexing_and_Abstracting'][0]}}{%
                             endif %}
                         </p>
+                        <div class="input-group m-3">
+                            <input type="text" class="form-control m-2" placeholder="Comment"
+                                   aria-label="Comment" aria-describedby="comment">
+                            <div class="input-group-append m-2">
+                                <button class="btn btn-outline-secondary" type="button" id="comment">Comment</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

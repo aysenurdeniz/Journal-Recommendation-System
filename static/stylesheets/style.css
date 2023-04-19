@@ -63,6 +63,10 @@ body {
     font-size: 0.85rem;
 }
 
+.w-b {
+    width: 100px;
+}
+
 /* -------- for Navbar -------- */
 
 .nav_a {

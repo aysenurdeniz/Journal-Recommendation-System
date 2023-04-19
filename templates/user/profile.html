@@ -4,13 +4,13 @@
 {% if user %}
 <div class="container-fluid">
     <div class="row">
-        <div class="col-lg-2 border-end m-1">
-            <button type="button" class="btn btn-primary m-2" data-bs-toggle="collapse" data-bs-target="#profile"
+        <div class="col-lg-2 border-end m-1 d-flex align-items-end flex-column">
+            <button type="button" class="btn btn-primary m-2 w-b" data-bs-toggle="collapse" data-bs-target="#profile"
                     aria-controls="profile" aria-expanded="true">
                 Profile
             </button>
             {% if user['role'] == 'admin' %}
-            <button type="button" class="btn btn-primary m-2" data-bs-toggle="collapse" data-bs-target="#all-users"
+            <button type="button" class="btn btn-primary m-2 w-b" data-bs-toggle="collapse" data-bs-target="#all-users"
                     aria-controls="all-users" aria-expanded="false">
                 All Users
             </button>

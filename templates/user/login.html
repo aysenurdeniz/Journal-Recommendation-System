@@ -5,21 +5,19 @@
 {% block body_content %}
 <div class="container">
     <div class="row">
-        <div class="col-lg-12 row d-flex justify-content-center p-3">
-            <div class="col-5 border-end align-left">
-                <h2 class="m-2" style="color: #032470;">
+        <div class="col-lg-12 row p-3">
+            <div class="col-4 border-end d-flex align-items-end flex-column">
+                <h2 class="m-2 mb-5" style="color: #032470;">
                     Welcome!
                 </h2>
-                <p>
-                    <button type="button" class="btn btn-primary m-2" data-bs-toggle="collapse" data-bs-target="#signin"
-                            aria-controls="signin" aria-expanded="true">
-                        Sign in
-                    </button>
-                    <button type="button" class="btn btn-primary m-2" data-bs-toggle="collapse" data-bs-target="#signup"
-                            aria-controls="signup" aria-expanded="false">
-                        Sign up
-                    </button>
-                </p>
+                <button type="button" class="btn btn-primary m-2 w-b" data-bs-toggle="collapse" data-bs-target="#signin"
+                        aria-controls="signin" aria-expanded="true">
+                    Sign in
+                </button>
+                <button type="button" class="btn btn-primary m-2 w-b" data-bs-toggle="collapse" data-bs-target="#signup"
+                        aria-controls="signup" aria-expanded="false">
+                    Sign up
+                </button>
             </div>
             <div class="col-7">
                 {% if message %}
@@ -31,26 +29,28 @@
                     <div class="card card-body">
                         <form method="post">
                             <div class="form-group">
-                                <label for="InputEmail">Email address</label>
-                                <input type="text" name="login_email" class="form-control" id="LoginInputEmail"
+                                <label for="InputEmail" class="m-1">Email address</label>
+                                <input type="text" name="login_email" class="form-control m-1" id="LoginInputEmail"
                                        placeholder="Enter email">
                             </div>
                             <div class="form-group">
-                                <label for="InputPassword">Password</label>
-                                <input type="password" name="login_password" class="form-control"
+                                <label for="InputPassword" class="m-1">Password</label>
+                                <input type="password" name="login_password" class="form-control m-1"
                                        id="LoginInputPassword"
                                        placeholder="Password">
                             </div>
                             <br>
-                            <a href="{{ url_for('forgot_password') }}" class="link-dark"
-                               onclick="return confirm('Really forgot?')">Forgot Password?</a>
-                            <button type="submit" class="btn btn-primary"> Sign in</button>
-                            <!--
-                            <div class="d-flex justify-content-between p-3">
+                            <div class="d-flex justify-content-between m-2">
                                 <a href="{{ url_for('forgot_password') }}" class="link-dark"
                                    onclick="return confirm('Really forgot?')">Forgot Password?</a>
-                                <button class="btn btn-dark" role="button" onclick=""> Sign in</button>
-                            </div> -->
+                                <button type="submit" class="btn btn-primary"> Sign in</button>
+                                <!--
+                                <div class="d-flex justify-content-between p-3">
+                                    <a href="{{ url_for('forgot_password') }}" class="link-dark"
+                                       onclick="return confirm('Really forgot?')">Forgot Password?</a>
+                                    <button class="btn btn-dark" role="button" onclick=""> Sign in</button>
+                                </div> -->
+                            </div>
                         </form>
                     </div>
                 </div>
