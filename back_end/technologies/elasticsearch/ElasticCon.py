@@ -1,18 +1,25 @@
 from elasticsearch import Elasticsearch
+from back_end.get_timer.Timer import Timer
+timerr = Timer()
 
 
 class ElasticCon:
-    def __init__(self, es_url, my_query):
-        self.es_url = Elasticsearch(es_url)
-        self.my_query = my_query
+
+    elastic_url = Elasticsearch('http://localhost:9200/papers/')
 
     def get_response(self):
         resp = self.es_url.search(query=self.my_query)
         print(resp)
 
-
-my_query = {"match_all": {}}
-my_url = 'http://localhost:9200/reviews/'
-
-object1 = ElasticCon(my_url, my_query)
-object1.get_response()
+    def elastic_search(self, fields, search_word, row_size):
+        """
+         A method to search in Elasticsearch
+        :param fields: string
+        :param search_word: string
+        :param row_size: int
+        :return: int, response, document
+        """
+        timerr.start_time()
+        response = self.elastic_url.search(size=row_size, track_total_hits=True, query={"match": {fields: search_word}})
+        finish_time = timerr.finish_time()
+        return finish_time, response['hits']['total']['value'], response['hits']['hits']

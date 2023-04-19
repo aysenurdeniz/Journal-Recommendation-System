@@ -1,26 +1,19 @@
-from urllib.request import urlopen
-
 import bcrypt as bcrypt
-
-import simplejson
-from elasticsearch import Elasticsearch
 from flask import Flask, render_template, request, redirect, url_for, session
 import os
 
-from back_end.get_timer.Timer import Timer
-timerr = Timer()
-
 from back_end.technologies.mongodb.MongoDBCon import MongoDBCon
-mongoDBCon = MongoDBCon()
-
 from back_end.mail.ForgotPassword import ForgotPassword
+from back_end.technologies.solr.SolrCon import SolrCon
+from back_end.technologies.elasticsearch.ElasticCon import ElasticCon
+
+mongoDBCon = MongoDBCon()
 forgotPassword = ForgotPassword()
+solrCon = SolrCon()
+elasticsearchCon = ElasticCon()
 
 app = Flask(__name__)
 app.secret_key = os.urandom(20)
-
-solr_url = 'http://localhost:8983/solr/wos/select?'
-elastic_url = Elasticsearch('http://localhost:9200/papers/')
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -48,7 +41,7 @@ def index():
         # fields = "Domain"
 
         # es_time, es_count_results, es_results = elastic_search(fields, search_word, "10")
-    solr_time, solr_count_results, solr_results = solr_search(fields, search_word, "10")
+    solr_time, solr_count_results, solr_results = solrCon.solr_search(fields, search_word, "10")
     solr_sec = float((solr_time / 1000) % 60)
     # for i in range(6):
     #     solr_time, solr_count_results, solr_results = SolrSearch(fields, search_word, rowsize)
@@ -176,6 +169,7 @@ def register():
 def forgot_password():
     return forgotPassword.mail_send()
 
+
 # -----------------------------------------------------------
 
 
@@ -190,35 +184,6 @@ def array_average(arr):
     for i in range(1, len(arr)):
         arr_avg += arr[i]
     return str(arr_avg / len(arr) - 1)
-
-
-def solr_search(fields, search_word, row_size):
-    """
-    A method to search in Apache Solr
-    :param fields: string
-    :param search_word: string
-    :param row_size: int
-    :return: int, response, document
-    """
-    timerr.start_time()
-    # defType=dismax iken qf ile istenilen fieldlerin hepsinde arama işlemi gerçekleştirilebilir.
-    response = simplejson.load(urlopen("{}rows={}&q={}:{}".format(solr_url, row_size, fields, search_word)))
-    finish_time = timerr.finish_time()
-    return finish_time, response['response']['numFound'], response['response']['docs']
-
-
-def elastic_search(fields, search_word, row_size):
-    """
-     A method to search in Elasticsearch
-    :param fields: string
-    :param search_word: string
-    :param row_size: int
-    :return: int, response, document
-    """
-    timerr.start_time()
-    response = elastic_url.search(size=row_size, track_total_hits=True, query={"match": {fields: search_word}})
-    finish_time = timerr.finish_time()
-    return finish_time, response['hits']['total']['value'], response['hits']['hits']
 
 
 if __name__ == '__main__':
