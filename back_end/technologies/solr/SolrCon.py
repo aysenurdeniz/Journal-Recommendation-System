@@ -1,4 +1,3 @@
-import json
 from urllib.request import urlopen
 import simplejson
 from back_end.get_timer.Timer import Timer
@@ -8,12 +7,6 @@ timerr = Timer()
 class SolrCon:
 
     solr_url = 'http://localhost:8983/solr/wos/select?'
-
-    def print_response(self):
-        response = json.load(self.solr_url)
-        num_results = response['response']['numFound']
-        results = response['response']['docs']
-        return num_results, results
 
     def solr_search(self, fields, search_word, row_size):
         """

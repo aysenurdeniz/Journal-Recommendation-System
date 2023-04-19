@@ -7,10 +7,6 @@ class ElasticCon:
 
     elastic_url = Elasticsearch('http://localhost:9200/papers/')
 
-    def get_response(self):
-        resp = self.es_url.search(query=self.my_query)
-        print(resp)
-
     def elastic_search(self, fields, search_word, row_size):
         """
          A method to search in Elasticsearch
