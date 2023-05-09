@@ -147,6 +147,9 @@ def register():
 def forgot_password():
     return forgotPassword.mail_send()
 
+def comment_edit():
+    pass
+
 
 # -----------------------------------------------------------
 def array_average(arr):
