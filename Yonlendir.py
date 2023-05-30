@@ -147,6 +147,15 @@ def register():
 def forgot_password():
     return forgotPassword.mail_send()
 
+
+@app.route('/comment', methods=["POST", "GET"])
+def comment():
+    if request.method == "POST":
+        journal_id = request.form["journal_id"]
+        comment = request.form["comment_text"]
+
+
+
 def comment_edit():
     pass
 

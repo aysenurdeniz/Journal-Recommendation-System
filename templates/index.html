@@ -144,6 +144,11 @@
                     </div>
                     <div class="modal-body">
                         <p>
+                            <b>ID: </b>
+                            {% if document['id']%}{{
+                            document['id'][0]}}{% endif %}
+                        </p>
+                        <p>
                             <b>Journal Name: </b>
                             {% if document['Journal_Name']%}{{ document['Journal_Name'][0]}}{% endif %}
                         </p>
@@ -192,11 +197,12 @@
                             <div class="card-body">
                                 <p><b>{{ session.full_name }}</b> as: </p>
                                 <div class="input-group m-2">
-                                    <input id="comment-text" type="text" class="form-control m-2"
+                                    <input type="hidden" id="journal_id" value="{% if document['id']%}{{ document['id'][0]}}{% endif %}">
+                                    <input id="comment_text" type="text" class="form-control m-2"
                                            placeholder="Comment"
                                            aria-label="Comment" aria-describedby="comment">
                                     <div class="input-group-append m-2">
-                                        <button class="btn btn-outline-secondary" type="button" id="comment">
+                                        <button class="btn btn-outline-secondary" type="button">
                                             Submit
                                         </button>
                                     </div>
