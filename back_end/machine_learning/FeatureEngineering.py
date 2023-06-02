@@ -1,18 +1,10 @@
-from pandas import pd
+import pandas as pd
 from nltk.corpus import stopwords
 from textblob import Word
 
-import nltk
-# nltk.download('wordnet')
-# nltk kütüphanesinden stopwords listesini indir
-# nltk.download('stopwords')
-sw = stopwords.words('english')
 
-
-df = pd.read_csv("back_end/dataset/wos-engineering.csv", sep=",")
-
-
-def text_preprocessing(field):
+def text_preprocessing(df, field):
+    sw = stopwords.words('english')
     # Normalizing Case Folding
     df[field] = df[field].str.lower()
     # -----------------------------------
@@ -39,6 +31,3 @@ def text_preprocessing(field):
     # Lemmatization
     df[field] = df[field].apply(lambda x: " ".join([Word(word).lemmatize() for word in x.split()]))
     return df[field]
-
-
-text_preprocessing("Aims and Scope")
