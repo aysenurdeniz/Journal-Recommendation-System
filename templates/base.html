@@ -32,7 +32,8 @@
                 </li>
                 {% if session.email %}
                 <li class="nav-item dropdown">
-                    <a class="nav_a dropdown-toggle {{ 'nav_a_active' if request.path == '/profile' }}" href="/profile" data-bs-toggle="dropdown"
+                    <a class="nav_a dropdown-toggle {{ 'nav_a_active' if request.path == '/profile' }}" href="/profile"
+                       data-bs-toggle="dropdown"
                        aria-expanded="false">
                         {{ session.full_name }}
                     </a>
@@ -44,7 +45,8 @@
                 </li>
                 {% else %}
                 <li class="nav-item">
-                    <a class="nav_a {{ 'nav_a_active' if (request.path == '/login') or (request.path == '/logout') }}" href="{{ url_for('login') }}"
+                    <a class="nav_a {{ 'nav_a_active' if (request.path == '/login') or (request.path == '/logout') }}"
+                       href="{{ url_for('login') }}"
                        target="_blank">Login</a>
                 </li>
                 {% endif %}
@@ -59,11 +61,18 @@
 
 <footer class="bg-light">
     <div class="container text-center">
-        <p> &copy; 2022 <a class="footer_a" href="https://aysenurdeniz.github.io/" target="_blank">Aysenur Deniz</a> and
-            <a class="footer_a" href="https://aaaydin.github.io/" target="_blank">Ahmet Arif Aydin</a></p>
+        <p>
+            &copy;
+            <span id="copyright"></span>
+            <a class="footer_a" href="https://aysenurdeniz.github.io/" target="_blank">Aysenur Deniz</a> and
+            <a class="footer_a" href="https://aaaydin.github.io/" target="_blank">Ahmet Arif Aydin</a>
+        </p>
     </div>
 </footer>
 
+<script>
+    document.getElementById('copyright').appendChild(document.createTextNode(new Date().getFullYear()))
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
         integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
         crossorigin="anonymous"></script>

@@ -136,3 +136,27 @@ footer {
 
 
 /* -------- for Pagination -------- */
+
+/* -------- for Progress -------- */
+
+.rating{
+    padding: 17px;
+    border: 1px silver solid;
+    border-radius: 25px;
+}
+
+.rating::-webkit-slider-thumb {
+    background: #001A50;
+    border: 1px;
+    border-radius: 3px;
+}
+
+.rating::-moz-range-thumb {
+    background: blue;
+    border: 1px;
+    border-radius: 5px;
+}
+
+.rating::-ms-thumb {
+    background: green;
+}

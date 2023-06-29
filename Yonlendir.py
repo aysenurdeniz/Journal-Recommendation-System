@@ -2,6 +2,8 @@ import bcrypt as bcrypt
 from flask import Flask, render_template, request, redirect, url_for, session
 import os
 
+from flask_paginate import Pagination
+
 from back_end.technologies.mongodb.MongoDBCon import MongoDBCon
 from back_end.mail.ForgotPassword import ForgotPassword
 from back_end.technologies.solr.SolrCon import SolrCon
@@ -27,11 +29,13 @@ def index():
         search_word = request.form["searchWord"]
 
     # es_time, es_count_results, es_results = elastic_search(fields, search_word, "10")
-    solr_time, solr_count_results, solr_results = solrCon.solr_search(fields, search_word, "10")
+    solr_time, solr_count_results, solr_results = solrCon.solr_search(fields, search_word, "200")
     solr_sec = float((solr_time / 1000) % 60)
 
+    pagination, items_pagination = paginate(solr_results, 10)
+
     return render_template('index.html', index_title=index_title, numresults=solr_count_results, results=solr_results,
-                           timeFin=solr_sec)
+                           timeFin=solr_sec, pagination=pagination, items=items_pagination)
 
 
 @app.route('/general/about_us')
@@ -158,6 +162,15 @@ def comment():
 
 def comment_edit():
     pass
+
+
+def paginate(results, per_page):
+    page = int(request.args.get('page', 1))
+    offset = (page - 1) * per_page
+    items_pagination = results[offset:offset + per_page]
+    total = len(results)
+    pagination = Pagination(page=page, per_page=per_page, offset=offset, total=total)
+    return pagination, items_pagination
 
 
 # -----------------------------------------------------------
