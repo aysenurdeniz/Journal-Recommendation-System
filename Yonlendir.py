@@ -1,16 +1,17 @@
+from datetime import datetime
+
 import bcrypt as bcrypt
 from flask import Flask, render_template, request, redirect, url_for, session
 import os
 
 from flask_paginate import Pagination
+from matplotlib import __getattr__
 
 from back_end.technologies.mongodb.MongoDBCon import MongoDBCon
-from back_end.mail.ForgotPassword import ForgotPassword
 from back_end.technologies.solr.SolrCon import SolrCon
 from back_end.technologies.elasticsearch.ElasticCon import ElasticCon
 
 mongoDBCon = MongoDBCon()
-forgotPassword = ForgotPassword()
 solrCon = SolrCon()
 elasticsearchCon = ElasticCon()
 
@@ -23,10 +24,14 @@ def index():
     index_title = "Content & Feedback JRS"
     fields = "*"
     search_word = "*"
+    journal_id = ""
 
     if request.method == "POST":
         fields = "Aims_and_Scope"
         search_word = request.form["searchWord"]
+        journal_id = request.form.get("journal_id")
+
+    print(journal_id)
 
     # es_time, es_count_results, es_results = elastic_search(fields, search_word, "10")
     solr_time, solr_count_results, solr_results = solrCon.solr_search(fields, search_word, "200")
@@ -34,8 +39,20 @@ def index():
 
     pagination, items_pagination = paginate(solr_results, 10)
 
+    comments = [('Ayşenur Deniz', 'Great Journal', 8),
+                ('Esra Deniz', 'Great Journal', 8),
+                ('Ahmet Er', 'Great Journal', 8),
+                ('Ömer Türk', 'Great Journal', 8),
+                ('Talha Türkmen', 'Great Journal', 8),
+                ('Yusuf Koç', 'Great Journal', 8),
+                ('Ayşenur Deniz', 'Great Journal', 8),
+                ('Nedime Gul', 'Great Journal', 8),
+                ('Mehmet Ulusoy', 'Great Journal', 8)]
+    for comment in comments:
+        print(comment[2])
+
     return render_template('index.html', index_title=index_title, numresults=solr_count_results, results=solr_results,
-                           timeFin=solr_sec, pagination=pagination, items=items_pagination)
+                           timeFin=solr_sec, pagination=pagination, items=items_pagination, comments=comments)
 
 
 @app.route('/general/about_us')
@@ -137,7 +154,8 @@ def register():
         else:
             hashed = bcrypt.hashpw(password2.encode('utf-8'), bcrypt.gensalt())
             user_input = {'user_name': user_name, 'full_name': full_name, 'email': email, 'password': hashed,
-                          'department': department, 'role': 'user'}
+                          'department': department, 'role': 'user', 'created_date': datetime.now(),
+                          'updated_date': datetime.now()}
             mongoDBCon.insert(user_input)
 
             user_data = mongoDBCon.find_user({"email": email})
@@ -149,19 +167,35 @@ def register():
 
 @app.route('/user/forgot_password', methods=["POST"])
 def forgot_password():
-    return forgotPassword.mail_send()
-
-
-@app.route('/comment', methods=["POST", "GET"])
-def comment():
-    if request.method == "POST":
-        journal_id = request.form["journal_id"]
-        comment = request.form["comment_text"]
-
-
-
-def comment_edit():
     pass
+
+
+@app.route('/comment', methods=["POST"])
+def comment():
+    journal_id, comment_text, rating_range = "", "", ""
+    if "email" in session:
+        email = session["email"]
+        user = mongoDBCon.find_user({"email": email})
+
+        if request.method == "POST":
+            journal_id = request.form.get("journal_id")
+            comment_text = request.form.get("comment_text")
+            rating_range = request.form.get("rating_range")
+
+            mongoDBCon.my_col.update_one({"_id": user["_id"]},
+                                         {"$set": {"comments.{}".format(journal_id): {"com": comment_text,
+                                                                                      "rating": rating_range}}})
+    return redirect(url_for('index'))
+
+
+@app.route('/get_comments')
+def get_comments():
+    if request.method == "GET":
+        journal_id = request.form.get("id")
+        cursor = mongoDBCon.my_col.find({"comments.{}".format(journal_id): {"$exists": "true"}})
+        comments = [(cur["full_name"], cur["comments"][journal_id]["com"],
+                     cur["comments"][journal_id]["rating"]) for cur in cursor]
+        return render_template('index.html', comments=comments)
 
 
 def paginate(results, per_page):
@@ -185,6 +219,17 @@ def array_average(arr):
     for i in range(1, len(arr)):
         arr_avg += arr[i]
     return str(arr_avg / len(arr) - 1)
+
+
+# ------------------- ERROR PAGES ----------------------------
+
+# @app.errorhandler(404)
+# def page_not_found(e):
+#     return render_template('404.html'), 404  # Not Found
+#
+# @app.errorhandler(500)
+# def internal_server_error(e):
+#     return render_template('500.html'), 500  # Internal Server Error
 
 
 if __name__ == '__main__':

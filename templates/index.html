@@ -129,7 +129,12 @@
                      aria-valuemin="0" aria-valuemax="100"></div>
             </div>
             <div class="read-more p-2">
-                <a href="/" data-bs-toggle="modal" data-bs-target="#read-more{{ document.id }}">Read More</a>
+                <form action="/get_comments" method="get">
+                    <input name="id" value="{{ document.id }}" hidden>
+                    <button type="submit"><a href="/" data-bs-toggle="modal"
+                                             data-bs-target="#read-more{{ document.id }}">Read More</a></button>
+                </form>
+
             </div>
         </div>
 
@@ -145,6 +150,10 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
+                        <p>
+                            <b>ID: </b>
+                            {% if document['id']%}{{ document['id'][0]}}{% endif %}
+                        </p>
                         <p>
                             <b>Journal Name: </b>
                             {% if document['Journal_Name']%}{{ document['Journal_Name'][0]}}{% endif %}
@@ -194,64 +203,49 @@
                             <div class="m-3">
                                 <p><b>{{ session.full_name }}</b>:</p>
                             </div>
-                            <div class="input-group m-2 row">
+                            <form class="input-group m-2 row" action="/comment" method="post">
                                 <div class="p-2 col-7">
-                                    <input type="hidden" id="journal_id"
-                                           value="{% if document['id']%}{{ document['id'][0]}}{% endif %}">
-                                    <input id="comment_text" type="text" class="form-control rounded-pill"
+                                    <input name="journal_id" value="{{ document.id }}">
+                                    <input name="comment_text" type="text" class="form-control rounded-pill"
                                            placeholder="Comment"
                                            aria-label="Comment" aria-describedby="comment">
                                 </div>
                                 <div class="p-3 col">
-                                    <label for="rating-range" class="form-label text-right"> Rating: </label>
+                                    <label for="rating_range" class="form-label text-right"> Rating: </label>
                                 </div>
                                 <div class="p-2 col-3">
-                                    <input type="range" class="form-range rating" min="0" max="5" id="rating-range">
+                                    <input type="range" class="form-range rating" min="0" max="10" name="rating_range"
+                                           id="rating_range">
                                 </div>
                                 <div class="p-2 col">
-                                    <button class="btn btn-secondary" type="button">
+                                    <button class="btn btn-secondary" type="submit">
                                         Comment
                                     </button>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                         {% else %}
                         <p class="alert alert-danger"> Please login to leave a comment </p>
                         {% endif %}
                         <div class="card bg-light">
                             <div class="card-body">
+                                {% for comment in comments %}
                                 <div class="col-12 row border-bottom p-2">
-                                    <p><b> Ahmet Deniz </b>: </p>
+                                    <p><b> {{comment[0]}} </b>: </p>
                                     <div class="col-8">
                                         <div class="input-group">
-                                            Secondly, this is a comment. Comment is important to improve. So, leave
-                                            comments on your experiments.
+                                            {{comment[1]}}
                                         </div>
                                     </div>
                                     <div class="col-3 m-2">
                                         <div class="progress orange">
                                             <div class="progress-bar" style="width:60%; background:#fe3b3b;">
-                                                <div class="progress-value">6/10</div>
+                                                <div class="progress-value">{{comment[2]}}/10</div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-12 row p-2">
-                                    <p><b> Nur Tamer </b>: </p>
-                                    <div class="col-8">
-                                        <div class="input-group">
-                                            This is an example comment... This is an example comment...This is an
-                                            example comment...This is an example comment...This is an example comment...
-                                        </div>
-                                    </div>
-                                    <div class="col-3 m-2">
-                                        <div class="progress orange">
-                                            <div class="progress-bar" style="width:40%; background:#fd7e14;">
-                                                <div class="progress-value">4/10</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
