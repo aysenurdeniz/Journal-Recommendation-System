@@ -49,108 +49,115 @@
                     <button type="submit" class="btn btn-primary" formaction="/update"> Update</button>
                 </form>
             </div>
-            {% for item in all_user %}
             <div class="col-lg-11 collapse" id="all-users">
-                <div class="col container p-2">
-                    <div class="row p-1 border-bottom">
-                        <div class="col">
+                <table class="p-2 table">
+                    <thead>
+                    <tr class="p-1 border-bottom">
+                        <th>
                             Full Name
-                        </div>
-                        <div class="col">
+                        </th>
+                        <th>
                             User Name
-                        </div>
-                        <div class="col">
+                        </th>
+                        <th>
                             Email
-                        </div>
-                        <div class="col">
+                        </th>
+                        <th>
                             Department
-                        </div>
-                        <div class="col">
+                        </th>
+                        <th>
                             Role
-                        </div>
-                    </div>
-                    <div class="row p-1">
-                        <div class="col">
-                            <p>
-                                <a href="/profile" data-bs-toggle="modal"
-                                   data-bs-target="#form-{{item.id}}">{{item.full_name}}</a>
-                            </p>
-                        </div>
-                        <div class="col">
-                            <p>{{item.user_name}}</p>
-                        </div>
-                        <div class="col">
-                            <p>{{item.email}}</p>
-                        </div>
-                        <div class="col">
-                            <p>{{item.department}}</p>
-                        </div>
-                        <div class="col">
-                            <p>{{item.role}}</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Modal -->
-                <div class="modal fade" id="form-{{ item.id }}" data-bs-backdrop="static" data-bs-keyboard="false"
-                     tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-l modal-dialog-centered">
-                        <div class="modal-content" role="document">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-4">Update for User</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form method="post">
-                                    <div class="form-group">
-                                        <label class="m-1" for="UpdateFullName2">Full name</label>
-                                        <input type="text" name="full_name" class="form-control m-1"
-                                               id="UpdateFullName2"
-                                               value="{{item['full_name'] }}">
+                        </th>
+                        <th>
+                            Operations
+                        </th>
+                    </tr>
+                    </thead>
+                    {% for item in all_user %}
+                    <tbody>
+                    <tr class="p-1">
+                        <td>
+                            <a href="#" data-bs-toggle="modal"
+                               data-bs-target="#update{{item._id}}">{{item.full_name}}</a>
+                        </td>
+                        <td>
+                            {{item.user_name}}
+                        </td>
+                        <td>
+                            {{item.email}}
+                        </td>
+                        <td>
+                            {{item.department}}
+                        </td>
+                        <td>
+                            {{item.role}}
+                        </td>
+                        <td>
+                            <form method="POST" action="{{ url_for('delete', id=item['_id']) }}">
+                                <input type="submit" value="Delete"
+                                       onclick="return confirm('Are you sure you want to delete this entry?')">
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <!-- Modal -->
+                    <div class="modal fade" id="update{{item._id}}" data-bs-backdrop="static"
+                         data-bs-keyboard="false"
+                         tabindex="-1"
+                         aria-labelledby="read-more" aria-hidden="true">
+                        <div class="modal-dialog modal-md modal-dialog-centered">
+                            <div class="modal-content" role="document">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Update User</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <form id="update" method="post" action="{{ url_for('update', id=item['_id']) }}">
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label for="UpdateFullName">Full name</label>
+                                            <input type="text" name="full_name1" class="form-control"
+                                                   id="UpdateFullName2"
+                                                   value="{{ item['full_name'] }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="UpdateUserName">User name</label>
+                                            <input type="text" name="user_name1" class="form-control"
+                                                   id="UpdateUserName2"
+                                                   value="{{ item['user_name'] }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="UpdateDepartment">Department</label>
+                                            <input type="text" name="department1" class="form-control"
+                                                   id="UpdateDepartment2"
+                                                   value="{{ item['department'] }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="UpdateEmail">Email address</label>
+                                            <input type="text" name="email1" class="form-control" id="UpdateEmail2"
+                                                   value="{{ item['email'] }}">
+                                        </div>
+                                        <div class="form-group disabled">
+                                            <label for="UpdatePassword">Password</label>
+                                            <input type="password" name="password1" class="form-control"
+                                                   id="UpdatePassword2"
+                                                   value="*********" disabled>
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label class="m-1" for="UpdateUserName2">User name</label>
-                                        <input type="text" name="user_name" class="form-control m-1"
-                                               id="UpdateUserName2"
-                                               value="{{item.user_name}}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="m-1" for="UpdateDepartment">Department</label>
-                                        <input type="text" name="department" class="form-control m-1"
-                                               id="UpdateDepartment2"
-                                               value="{{item.department}}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="m-1" for="UpdateEmail2">Email address</label>
-                                        <input type="text" name="email" class="form-control m-1" id="UpdateEmail2"
-                                               value="{{item.email}}"
-                                               disabled>
-                                    </div>
-                                    <div class="form-group disabled">
-                                        <label class="m-1" for="UpdatePassword2">Password</label>
-                                        <input type="password" name="password1" class="form-control m-1"
-                                               id="UpdatePassword2"
-                                               value="*********" disabled>
-                                    </div>
-                                    <br>
                                     <div class="modal-footer">
-                                        <button type="submit" class="btn btn-primary m-1" formaction="/update"> Update
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
                                         </button>
-                                        <button type="submit" class="btn btn-danger m-1" formaction="/delete"> Delete
-                                        </button>
-                                        <button type="button" class="btn btn-secondary m-1" data-bs-dismiss="modal">Close
-                                        </button>
+                                        <button type="submit" class="btn btn-primary">Save changes</button>
                                     </div>
                                 </form>
                             </div>
                         </div>
                     </div>
-                </div>
+                    {% endfor %}
+                </table>
             </div>
-            {% endfor %}
         </div>
     </div>
-</div>
 </div>
 {% endif %}
 {% endblock %}

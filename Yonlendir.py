@@ -1,4 +1,5 @@
 from datetime import datetime
+from bson.objectid import ObjectId
 
 import bcrypt as bcrypt
 from flask import Flask, render_template, request, redirect, url_for, session
@@ -31,28 +32,14 @@ def index():
         search_word = request.form["searchWord"]
         journal_id = request.form.get("journal_id")
 
-    print(journal_id)
-
     # es_time, es_count_results, es_results = elastic_search(fields, search_word, "10")
     solr_time, solr_count_results, solr_results = solrCon.solr_search(fields, search_word, "200")
     solr_sec = float((solr_time / 1000) % 60)
 
     pagination, items_pagination = paginate(solr_results, 10)
 
-    comments = [('Ayşenur Deniz', 'Great Journal', 8),
-                ('Esra Deniz', 'Great Journal', 8),
-                ('Ahmet Er', 'Great Journal', 8),
-                ('Ömer Türk', 'Great Journal', 8),
-                ('Talha Türkmen', 'Great Journal', 8),
-                ('Yusuf Koç', 'Great Journal', 8),
-                ('Ayşenur Deniz', 'Great Journal', 8),
-                ('Nedime Gul', 'Great Journal', 8),
-                ('Mehmet Ulusoy', 'Great Journal', 8)]
-    for comment in comments:
-        print(comment[2])
-
     return render_template('index.html', index_title=index_title, numresults=solr_count_results, results=solr_results,
-                           timeFin=solr_sec, pagination=pagination, items=items_pagination, comments=comments)
+                           timeFin=solr_sec, pagination=pagination, items=items_pagination)
 
 
 @app.route('/general/about_us')
@@ -188,15 +175,36 @@ def comment():
     return redirect(url_for('index'))
 
 
-@app.route('/get_comments')
-def get_comments():
-    if request.method == "GET":
-        journal_id = request.form.get("id")
-        cursor = mongoDBCon.my_col.find({"comments.{}".format(journal_id): {"$exists": "true"}})
-        comments = [(cur["full_name"], cur["comments"][journal_id]["com"],
-                     cur["comments"][journal_id]["rating"]) for cur in cursor]
-        return render_template('index.html', comments=comments)
+@app.post('/<id>/comments/')
+def get_comments(id):
+    journal_id = id
+    cursor = mongoDBCon.my_col.find({"comments.{}".format(journal_id): {"$exists": "true"}})
+    comments = [(cur["full_name"], cur["comments"][journal_id]["com"],
+                 cur["comments"][journal_id]["rating"]) for cur in cursor]
+    return redirect(url_for('index'))
 
+
+@app.post('/<id>/delete/')
+def delete(id):
+    mongoDBCon.my_col.delete_one({"_id": ObjectId(id)})
+    return redirect(url_for('profile'))
+
+
+@app.post('/<id>/update/')
+def update(id):
+    if request.method == "POST":
+        user_name = request.form.get("user_name1")
+        full_name = request.form.get("full_name1")
+        email = request.form.get("email1")
+        department = request.form.get("department1")
+
+        mongoDBCon.my_col.update_one({"_id": ObjectId(id)},
+                                     {"$set": {"user_name": user_name, "full_name": full_name, "email": email,
+                                               "department": department}})
+    return redirect(url_for('profile'))
+
+
+# -----------------------------------------------------------
 
 def paginate(results, per_page):
     page = int(request.args.get('page', 1))
@@ -207,7 +215,6 @@ def paginate(results, per_page):
     return pagination, items_pagination
 
 
-# -----------------------------------------------------------
 def array_average(arr):
     """
     Average of values in a list

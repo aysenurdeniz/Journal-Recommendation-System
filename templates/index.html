@@ -89,7 +89,6 @@
     </div>
 </div>
 
-
 <div class="container p-3">
     <div class="row">
         {% if results and results|length > 0 %}
@@ -129,15 +128,10 @@
                      aria-valuemin="0" aria-valuemax="100"></div>
             </div>
             <div class="read-more p-2">
-                <form action="/get_comments" method="get">
-                    <input name="id" value="{{ document.id }}" hidden>
-                    <button type="submit"><a href="/" data-bs-toggle="modal"
-                                             data-bs-target="#read-more{{ document.id }}">Read More</a></button>
-                </form>
-
+                <a href="/" data-bs-toggle="modal"
+                   data-bs-target="#read-more{{ document.id }}">Read More</a></button>
             </div>
         </div>
-
 
         <!-- Modal -->
         <div class="modal fade" id="read-more{{ document.id }}" data-bs-backdrop="static" data-bs-keyboard="false"
@@ -205,7 +199,7 @@
                             </div>
                             <form class="input-group m-2 row" action="/comment" method="post">
                                 <div class="p-2 col-7">
-                                    <input name="journal_id" value="{{ document.id }}">
+                                    <input hidden name="journal_id" value="{{ document.id }}">
                                     <input name="comment_text" type="text" class="form-control rounded-pill"
                                            placeholder="Comment"
                                            aria-label="Comment" aria-describedby="comment">
