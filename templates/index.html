@@ -18,13 +18,25 @@
                     <input class="form-check-input" type="radio" name="domain" id="domain" value="True"/>
                     <label class="form-check-label" for="domain"> Domain </label>
                 </div> -->
-                <input type="text" name="searchWord" class="form-control"
-                       placeholder="Journal Name, Frequency, Aims and Scope or Indexing and Abstracting ...">
-                <button type="button" class="btn btn-primary" aria-expanded="false">Search</button>
-                <button type="button" class="btn btn-dark" data-bs-toggle="collapse" data-bs-target="#advanced-search"
+                <input type="text" name="searchWord" class="form-control col-7"
+                       placeholder="Aims and Scope">
+                <button type="submit" class="btn btn-primary col-2" aria-expanded="false">Search</button>
+                <button type="button" class="btn btn-dark col-2" data-bs-toggle="collapse" data-bs-target="#advanced-search"
                         aria-controls="advanced-search">
                     Advanced Search
                 </button>
+                <div class="collapse col-12" id="advanced-search">
+                    <div class=" container p-3">
+                        <div class="row">
+                            <input type="text" name="rating" class="form-control col m-1"
+                                   placeholder="Rating" disabled>
+                            <input type="text" name="frequency" class="form-control col m-1"
+                                   placeholder="Frequency">
+                            <input type="text" name="wos_core" class="form-control col m-1"
+                                   placeholder="WoS Core Collection">
+                        </div>
+                    </div>
+                </div>
                 <!--<select class="form-select" name="row_select">
                     <option selected>Select Row Size</option>
                     {% for o in rowlist %}
@@ -45,18 +57,6 @@
                     </div>
                 </ul> -->
             </form>
-            <div class="collapse" id="advanced-search">
-                <div class=" container p-3">
-                    <div class="row">
-                        <input type="text" name="rating" class="form-control col m-1"
-                               placeholder="Rating">
-                        <input type="text" name="frequency" class="form-control col m-1"
-                               placeholder="Frequency">
-                        <input type="text" name="wos-core" class="form-control col m-1"
-                               placeholder="WoS Core Collection">
-                    </div>
-                </div>
-            </div>
         </div>
         <!-- <div class="col-sm-6">
             {% if es_results and es_results|length > 0 %}
@@ -128,7 +128,7 @@
                      aria-valuemin="0" aria-valuemax="100"></div>
             </div>
             <div class="read-more p-2">
-                <a href="/" data-bs-toggle="modal"
+                <a href=" url_for('get_comments', comment_id= {{ document.id }} )" data-bs-toggle="modal"
                    data-bs-target="#read-more{{ document.id }}">Read More</a></button>
             </div>
         </div>
@@ -146,7 +146,7 @@
                     <div class="modal-body">
                         <p>
                             <b>ID: </b>
-                            {% if document['id']%}{{ document['id'][0]}}{% endif %}
+                            {% if document['id']%}{{ document['id']}}{% endif %}
                         </p>
                         <p>
                             <b>Journal Name: </b>
@@ -221,9 +221,9 @@
                         {% else %}
                         <p class="alert alert-danger"> Please login to leave a comment </p>
                         {% endif %}
+                        {% for comment in comments %}
                         <div class="card bg-light">
                             <div class="card-body">
-                                {% for comment in comments %}
                                 <div class="col-12 row border-bottom p-2">
                                     <p><b> {{comment[0]}} </b>: </p>
                                     <div class="col-8">
@@ -239,9 +239,9 @@
                                         </div>
                                     </div>
                                 </div>
-                                {% endfor %}
                             </div>
                         </div>
+                        {% endfor %}
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

@@ -1,16 +1,13 @@
 from datetime import datetime
 from bson.objectid import ObjectId
-
 import bcrypt as bcrypt
 from flask import Flask, render_template, request, redirect, url_for, session
 import os
-
 from flask_paginate import Pagination
-from matplotlib import __getattr__
-
 from back_end.technologies.mongodb.MongoDBCon import MongoDBCon
 from back_end.technologies.solr.SolrCon import SolrCon
 from back_end.technologies.elasticsearch.ElasticCon import ElasticCon
+from flask_mail import Mail, Message
 
 mongoDBCon = MongoDBCon()
 solrCon = SolrCon()
@@ -23,23 +20,66 @@ app.secret_key = os.urandom(20)
 @app.route("/", methods=["GET", "POST"])
 def index():
     index_title = "Content & Feedback JRS"
-    fields = "*"
-    search_word = "*"
-    journal_id = ""
+    fields, guery, search_word = "*", "*", "*"
+    wos_core, frequency = "", ""
 
     if request.method == "POST":
         fields = "Aims_and_Scope"
         search_word = request.form["searchWord"]
         journal_id = request.form.get("journal_id")
+        rating = request.form.get("rating")
+        wos_core = request.form.get("wos_core")
+        frequency = request.form.get("frequency")
 
-    # es_time, es_count_results, es_results = elastic_search(fields, search_word, "10")
-    solr_time, solr_count_results, solr_results = solrCon.solr_search(fields, search_word, "200")
+    query = "Aims_and_Scope:{}".format(search_word)
+
+    if len(wos_core) != 0:
+        query = "Aims_and_Scope:{}%20AND%20Web_of_Science_Core_Collection:{}".format(search_word, wos_core)
+
+    if len(frequency) != 0:
+        query = "Aims_and_Scope:{}%20AND%20Publication_Frequency:{}".format(search_word, frequency)
+
+    if len(frequency) != 0 and len(wos_core) != 0:
+        query = "Aims_and_Scope:{}%20AND%20Publication_Frequency:{}%20AND%20Web_of_Science_Core_Collection:{}".format(
+            search_word, frequency, wos_core)
+
+    solr_time, solr_count_results, solr_results = solrCon.solr_search("200", query)
     solr_sec = float((solr_time / 1000) % 60)
 
     pagination, items_pagination = paginate(solr_results, 10)
 
     return render_template('index.html', index_title=index_title, numresults=solr_count_results, results=solr_results,
                            timeFin=solr_sec, pagination=pagination, items=items_pagination)
+
+
+@app.route("/search", methods=["GET", "POST"])
+def search():
+    fields, guery, search_word = "*", "*", "*"
+
+    if request.method == "POST":
+        fields = "Aims_and_Scope"
+        search_word = request.form.get("searchWord")
+        rating = request.form.get("rating")
+        wos_core = request.form.get("wos_core")
+        frequency = request.form.get("frequency")
+
+        if len(wos_core) != 0:
+            query = "Aims_and_Scope:{} AND Web_of_Science_Core_Collection:{}".format(search_word, wos_core)
+
+        if len(frequency) != 0:
+            query = "Aims_and_Scope:{} AND Publication_Frequency:{}".format(search_word, frequency)
+
+        if len(frequency) != 0 and len(wos_core) != 0:
+            query = "Aims_and_Scope:{} AND Publication_Frequency:{} AND Web_of_Science_Core_Collection:{}".format(
+                search_word, frequency, wos_core)
+
+        solr_time, solr_count_results, solr_results = solrCon.solr_search("200", query)
+        solr_sec = float((solr_time / 1000) % 60)
+
+        pagination, items_pagination = paginate(solr_results, 10)
+
+        return render_template('index.html', numresults=solr_count_results, results=solr_results,
+                               timeFin=solr_sec, pagination=pagination, items=items_pagination)
 
 
 @app.route('/general/about_us')
@@ -175,13 +215,12 @@ def comment():
     return redirect(url_for('index'))
 
 
-@app.post('/<id>/comments/')
-def get_comments(id):
-    journal_id = id
-    cursor = mongoDBCon.my_col.find({"comments.{}".format(journal_id): {"$exists": "true"}})
-    comments = [(cur["full_name"], cur["comments"][journal_id]["com"],
-                 cur["comments"][journal_id]["rating"]) for cur in cursor]
-    return redirect(url_for('index'))
+@app.route('/<comment_id>')
+def get_comments(comment_id):
+    cursor = mongoDBCon.my_col.find({"comments.{}".format(comment_id): {"$exists": "true"}})
+    comments = [(cur["full_name"], cur["comments"][comment_id]["com"],
+                 cur["comments"][comment_id]["rating"]) for cur in cursor]
+    return render_template(url_for('index'), comments=comments)
 
 
 @app.post('/<id>/delete/')
