@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Contact{% endblock %}
+
+{% block body_content %}
+
+<div class="container">
+    <div class="row">
+        <div>
+            {% if document and document|length > 0 %}
+            <div class="border-bottom m-3">
+                <p class="text-uppercase text-center text-bold fs-4">
+                    {% if document[1][0]['Journal_Name']%}{{ document[1][0]['Journal_Name'][0]}}{% endif %}
+                </p>
+            </div>
+            <p>
+                <b>Publisher: </b>
+                {% if document[1][0]['Publisher']%}{{ document[1][0]['Publisher'][0]}}{% endif %}
+            </p>
+            <p>
+                <b>ISSN / eISSN: </b>
+                {% if document[1][0]['ISSN___eISSN']%}{{ document[1][0]['ISSN___eISSN'][0]}}{% endif %}
+            </p>
+            <p>
+                <b>Web of Science Core Collection: </b>
+                {% if document[1][0]['Web_of_Science_Core_Collection']%}{{
+                document[1][0]['Web_of_Science_Core_Collection'][0]}}{% endif %}
+            </p>
+            <p>
+                <b>Additional Web of Science Indexes: </b>
+                {% if document[1][0]['Additional_Web_of_Science_Indexes']%}{{
+                document[1][0]['Additional_Web_of_Science_Indexes'][0]}}{% endif %}
+            </p>
+            <p>
+                <b>Journal Website:</b>
+                <a href="{% if document[1][0]['Journal_Website']%}{{ document[1][0]['Journal_Website'][0]}}{% endif %}"
+                   target="_blank">
+                    {% if document[1][0]['Journal_Website']%}{{ document[1][0]['Journal_Website'][0]}}{% endif %}
+                </a>
+            </p>
+            <p>
+                <b>Publication Frequency: </b>
+                {% if document[1][0]['Publication_Frequency']%}{{ document[1][0]['Publication_Frequency'][0]}}{% endif
+                %}
+            </p>
+            <p class="text-justify">
+                <b>Aims and Scope: </b>
+                {% if document[1][0]['Aims_and_Scope']%}{{ document[1][0]['Aims_and_Scope'][0]}}{% endif %}
+            </p>
+            <p class="text-justify">
+                <b>Indexing and Abstracting: </b>
+                {% if document[1][0]['Indexing_and_Abstracting']%}{{ document[1][0]['Indexing_and_Abstracting'][0]}}{%
+                endif %}
+            </p>
+            {% endif %}
+            <p class="p-3 border-bottom fs-5 text-bold"> Comments: </p>
+            {% if session.email %}
+            <div class="container">
+                <div class="m-3">
+                    <p class="post_name"><b>{{ session.full_name }}</b>:</p>
+                </div>
+                <form class="input-group m-2 row" action="/comment" method="post">
+                    <div class="p-2 col-7">
+                        <input hidden name="journal_id" value="{{ document[1][0]['id'] }}">
+                        <input name="comment_text" type="text" class="form-control rounded-pill"
+                               placeholder="Comment"
+                               aria-label="Comment" aria-describedby="comment">
+                    </div>
+                    <div class="p-3 col">
+                        <label for="rating_range" class="form-label text-right"> Rating: </label>
+                    </div>
+                    <div class="p-2 col-3">
+                        <input type="range" class="form-range rating" min="0" max="10" name="rating_range"
+                               id="rating_range">
+                    </div>
+                    <div class="p-2 col">
+                        <button type="submit" class="btn btn-outline-success"> Comment</button>
+                    </div>
+                </form>
+            </div>
+            {% else %}
+            <p class="alert alert-danger"> Please login to leave a comment </p>
+            {% endif %}
+
+            <div class="row">
+                {% for comment in comments %}
+                <div class="col-2 m-2">
+                    <img src="../static/img/background.jpg" class="post_image float-end">
+                </div>
+                <div class="col-9 row post">
+                    <div class="col-lg-8 row">
+                        <div class="post_name">{{comment[0]}}</div>
+                        <div class="post_date">
+                            {{comment[3]}}
+                        </div>
+                        <div class="col-12 post_comment">
+                            {{comment[1]}}
+                        </div>
+                    </div>
+                    <div class="col-lg-3 m-3">
+                        <span> <b>Score</b> out of <b>10</b>: </span>
+                        <div class="progress mt-2">
+                            <div id="progress-bar-{{comment[2]}}" class="progress-bar">
+                                <div class="progress-value">{{comment[2]}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -20,46 +20,19 @@ app.secret_key = os.urandom(20)
 @app.route("/", methods=["GET", "POST"])
 def index():
     index_title = "Content & Feedback JRS"
-    solr_time, solr_count_results, solr_results = solrCon.solr_search("200", "*:*")
-    solr_sec = float((solr_time / 1000) % 60)
-
-    pagination, items_pagination = paginate(solr_results, 10)
-
-    return render_template('index.html', index_title=index_title, numresults=solr_count_results, results=solr_results,
-                           timeFin=solr_sec, pagination=pagination, items=items_pagination)
-
-
-@app.route("/search", methods=["GET", "POST"])
-def search():
-    query, search_word = "*:*", "*"
-    wos_core, frequency, journal_id = "", "", ""
+    query = "*:*"
 
     if request.method == "POST":
-        search_word = request.form["searchWord"]
-        journal_id = request.form.get("journal_id")
-        rating = request.form.get("rating")
+        search_word = request.form.get("searchWord")
+        ind_abs = request.form.get("ind_abs")
         wos_core = request.form.get("wos_core")
         frequency = request.form.get("frequency")
+        query = build_query(search_word, ind_abs, wos_core, frequency)
 
-    query = "Aims_and_Scope:{}".format(search_word)
-
-    if len(wos_core) != 0:
-        query = "Aims_and_Scope:{}%20AND%20Web_of_Science_Core_Collection:{}".format(search_word, wos_core)
-
-    if len(frequency) != 0:
-        query = "Aims_and_Scope:{}%20AND%20Publication_Frequency:{}".format(search_word, frequency)
-
-    if len(frequency) != 0 and len(wos_core) != 0:
-        query = "Aims_and_Scope:{}%20AND%20Publication_Frequency:{}%20AND%20Web_of_Science_Core_Collection:{}".format(
-            search_word, frequency, wos_core)
-
-    solr_time, solr_count_results, solr_results = solrCon.solr_search("200", query)
-    solr_sec = float((solr_time / 1000) % 60)
-
+    solr_count_results, solr_results, solr_sec = solr_search(query)
     pagination, items_pagination = paginate(solr_results, 10)
-
-    return render_template('index.html', numresults=solr_count_results, results=solr_results,
-                           timeFin=solr_sec, pagination=pagination, items=items_pagination)
+    return render_template('index.html', index_title=index_title, numresults=solr_count_results,
+                           results=solr_results, timeFin=solr_sec, pagination=pagination, items=items_pagination)
 
 
 @app.route('/general/about_us')
@@ -70,6 +43,95 @@ def about():
 @app.route('/general/contact')
 def contact():
     return render_template('/general/contact.html')
+
+
+@app.route('/general/journal')
+def journal():
+    return render_template('/general/journal.html')
+
+
+# ----------------- Search Operation -------------------
+
+
+@app.route("/search", methods=["GET", "POST"])
+def search():
+    query = "*:*"
+    if request.method == "POST":
+        search_word = request.form.get("searchWord")
+        ind_abs = request.form.get("ind_abs")
+        wos_core = request.form.get("wos_core")
+        frequency = request.form.get("frequency")
+        query = build_query(search_word, ind_abs, wos_core, frequency)
+
+    solr_count_results, solr_results, solr_sec = solr_search(query)
+    pagination, items_pagination = paginate(solr_results, 10)
+
+    return render_template('index.html', numresults=solr_count_results, results=solr_results,
+                           timeFin=solr_sec, pagination=pagination, items=items_pagination)
+
+
+def build_query(search_word, ind_abs, wos_core, frequency):
+    query_parts = []
+
+    if search_word:
+        query_parts.append(f"Aims_and_Scope:{search_word}")
+
+    if ind_abs:
+        query_parts.append(f"Indexing_and_Abstracting:{ind_abs}")
+
+    if wos_core:
+        query_parts.append(f"Web_of_Science_Core_Collection:{wos_core}")
+
+    if frequency:
+        query_parts.append(f"Publication_Frequency:{frequency}")
+
+    if not query_parts:
+        query_parts.append("*:*")
+
+    query = "%20AND%20".join(query_parts)
+    return query
+
+
+def solr_search(query):
+    solr_time, solr_count_results, solr_results = solrCon.solr_search(1655, query)
+    solr_sec = float((solr_time / 1000) % 60)
+    return solr_count_results, solr_results, solr_sec
+
+
+# ------------------ Comment Operations ---------------------
+
+@app.route('/comment', methods=["POST"])
+def comment():
+    journal_id, comment_text, rating_range = "", "", ""
+    if "email" in session:
+        email = session["email"]
+        user = mongoDBCon.find_user({"email": email})
+
+        if request.method == "POST":
+            journal_id = request.form.get("journal_id")
+            comment_text = request.form.get("comment_text")
+            rating_range = request.form.get("rating_range")
+
+            mongoDBCon.my_col.update_one({"_id": user["_id"]},
+                                         {"$set": {"comments.{}".format(journal_id): {"com": comment_text,
+                                                                                      "rating": rating_range,
+                                                                                      "created_date": datetime.now()}}})
+            return redirect(url_for('journal'))
+
+
+@app.route('/journal/<comment_id>', methods=["POST"])
+def journal_detail(comment_id):
+    document = solr_search("id:{}".format(comment_id))
+    print(document)
+    comments = get_comment_by_id(comment_id)
+    return render_template('/general/journal.html', comments=comments, document=document)
+
+
+def get_comment_by_id(comment_id):
+    cursor = mongoDBCon.my_col.find({"comments.{}".format(comment_id): {"$exists": "true"}})
+    comments = [(cur["full_name"], cur["comments"][comment_id]["com"],
+                 cur["comments"][comment_id]["rating"], cur["comments"][comment_id]["created_date"]) for cur in cursor]
+    return comments
 
 
 # -------------------------- Login Operations ---------------------------------
@@ -168,7 +230,7 @@ def register():
             user_data = mongoDBCon.find_user({"email": email})
             new_email = user_data['email']
 
-            return render_template('index.html', email=new_email)
+            return render_template('profile.html', email=new_email)
     return render_template('/user/login.html')
 
 
@@ -177,41 +239,15 @@ def forgot_password():
     pass
 
 
-@app.route('/comment', methods=["POST"])
-def comment():
-    journal_id, comment_text, rating_range = "", "", ""
-    if "email" in session:
-        email = session["email"]
-        user = mongoDBCon.find_user({"email": email})
+# ------------- MongoDB CRUD -------------------------
 
-        if request.method == "POST":
-            journal_id = request.form.get("journal_id")
-            comment_text = request.form.get("comment_text")
-            rating_range = request.form.get("rating_range")
-
-            mongoDBCon.my_col.update_one({"_id": user["_id"]},
-                                         {"$set": {"comments.{}".format(journal_id): {"com": comment_text,
-                                                                                      "rating": rating_range,
-                                                                                      "created_date": datetime.now()}}})
-    return redirect(url_for('index'))
-
-
-@app.route('/get_comments/<comment_id>', methods=["POST"])
-def get_comments(comment_id):
-    cursor = mongoDBCon.my_col.find({"comments.{}".format(comment_id): {"$exists": "true"}})
-    comments = [(cur["full_name"], cur["comments"][comment_id]["com"],
-                 cur["comments"][comment_id]["rating"], cur["comments"][comment_id]["created_date"]) for cur in cursor]
-    rate = [cur["comments"][comment_id]["rating"] for cur in cursor]
-    return render_template('index.html', comments=comments)
-
-
-@app.post('/<id>/delete/')
+@app.post('/delete/<id>')
 def delete(id):
     mongoDBCon.my_col.delete_one({"_id": ObjectId(id)})
     return redirect(url_for('profile'))
 
 
-@app.post('/<id>/update/')
+@app.post('/update/<id>')
 def update(id):
     if request.method == "POST":
         user_name = request.form.get("user_name1")
@@ -230,8 +266,8 @@ def update(id):
 def paginate(results, per_page):
     page = int(request.args.get('page', 1))
     offset = (page - 1) * per_page
-    items_pagination = results[offset:offset + per_page]
     total = len(results)
+    items_pagination = results[offset:offset + per_page]
     pagination = Pagination(page=page, per_page=per_page, offset=offset, total=total)
     return pagination, items_pagination
 
