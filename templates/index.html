@@ -5,7 +5,7 @@
 <div class="bg-search p-3">
     <div class="container">
         <div class="row">
-            <form class="input-group" action="/" method="post">
+            <form class="input-group" action="/search" method="post">
                 <!--<div class="form-check p-3">
                     <input class="form-check-input" type="radio" name="keywords" id="keywords" value="True"/>
                     <label class="form-check-label" for="keywords"> Keywords </label>
@@ -21,7 +21,8 @@
                 <input type="text" name="searchWord" class="form-control col-7"
                        placeholder="Aims and Scope">
                 <button type="submit" class="btn btn-primary col-2" aria-expanded="false">Search</button>
-                <button type="button" class="btn btn-dark col-2" data-bs-toggle="collapse" data-bs-target="#advanced-search"
+                <button type="button" class="btn btn-dark col-2" data-bs-toggle="collapse"
+                        data-bs-target="#advanced-search"
                         aria-controls="advanced-search">
                     Advanced Search
                 </button>
@@ -124,12 +125,13 @@
         <div class="col-lg-3 m-2 bg-light">
             <label class="p-2"> Popularity: 5/10 </label>
             <div class="progress">
-                <div class="progress-bar bg-success" role="progressbar" style="width: 50%"
-                     aria-valuemin="0" aria-valuemax="100"></div>
+                <div id="progress-bar"></div>
             </div>
             <div class="read-more p-2">
-                <a href=" url_for('get_comments', comment_id= {{ document.id }} )" data-bs-toggle="modal"
-                   data-bs-target="#read-more{{ document.id }}">Read More</a></button>
+                <a class="link-dark"
+                   data-bs-toggle="modal"
+                   data-bs-target="#read-more{{ document.id }}">Read More
+                </a>
             </div>
         </div>
 
@@ -195,7 +197,7 @@
                         {% if session.email %}
                         <div class="container">
                             <div class="m-3">
-                                <p><b>{{ session.full_name }}</b>:</p>
+                                <p class="post_name"><b>{{ session.full_name }}</b>:</p>
                             </div>
                             <form class="input-group m-2 row" action="/comment" method="post">
                                 <div class="p-2 col-7">
@@ -212,36 +214,42 @@
                                            id="rating_range">
                                 </div>
                                 <div class="p-2 col">
-                                    <button class="btn btn-secondary" type="submit">
-                                        Comment
-                                    </button>
+                                    <button type="submit" class="btn btn-outline-success"> Comment</button>
                                 </div>
                             </form>
                         </div>
                         {% else %}
                         <p class="alert alert-danger"> Please login to leave a comment </p>
                         {% endif %}
-                        {% for comment in comments %}
-                        <div class="card bg-light">
-                            <div class="card-body">
-                                <div class="col-12 row border-bottom p-2">
-                                    <p><b> {{comment[0]}} </b>: </p>
-                                    <div class="col-8">
-                                        <div class="input-group">
-                                            {{comment[1]}}
-                                        </div>
+                        <form id="getcomments" method="POST" action="{{ url_for('get_comments', comment_id=document['id']) }}">
+                            <input type="submit" class="btn btn-danger" value="Get Comment">
+                        </form>
+                        <div class="row">
+                            {% for comment in comments %}
+                            <div class="col-2 m-2">
+                                <img src="../static/img/background.jpg" class="post_image float-end">
+                            </div>
+                            <div class="col-9 row post">
+                                <div class="col-lg-8 row">
+                                    <div class="post_name">{{comment[0]}}</div>
+                                    <div class="post_date">
+                                        {{comment[3]}}
                                     </div>
-                                    <div class="col-3 m-2">
-                                        <div class="progress orange">
-                                            <div class="progress-bar" style="width:60%; background:#fe3b3b;">
-                                                <div class="progress-value">{{comment[2]}}/10</div>
-                                            </div>
+                                    <div class="col-12 post_comment">
+                                        {{comment[1]}}
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 m-3">
+                                    <span> <b>Score</b> out of <b>10</b>: </span>
+                                    <div class="progress mt-2">
+                                        <div id="progress-bar-{{comment[2]}}" class="progress-bar">
+                                            <div class="progress-value">{{comment[2]}}</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

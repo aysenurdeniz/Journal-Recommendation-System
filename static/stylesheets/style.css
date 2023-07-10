@@ -9,27 +9,17 @@ and open the templates in the editor.
 */
 
 :root {
-    --blue: #007bff;
-    --indigo: #6610f2;
-    --purple: #6f42c1;
-    --pink: #e83e8c;
-    --red: #dc3545;
-    --orange: #fd7e14;
-    --yellow: #ffc107;
-    --green: #28a745;
-    --teal: #20c997;
-    --cyan: #17a2b8;
-    --white: #fff;
-    --gray: #6c757d;
-    --gray-dark: #343a40;
-    --primary: #5867dd;
-    --secondary: #e1e1ef;
-    --success: #1dc9b7;
-    --info: #5578eb;
-    --warning: #ffb822;
-    --danger: #fd397a;
-    --light: #f8f9fa;
-    --dark: #343a40;
+    --bar-1: #922B21;
+    --bar-2: #B03A2E;
+    --bar-3: #A04000;
+    --bar-4: #AF601A;
+    --bar-5: #B9770E;
+    --bar-6: #B7950B;
+    --bar-7: #27AE60;
+    --bar-8: #1E8449;
+    --bar-9: #196F3D;
+    --bar-10: #145A32;
+
     --color1: #050934;
     --color2: #001A50;
     --color3: #032470;
@@ -132,14 +122,90 @@ footer {
     text-align: right;
 }
 
-/* -------- for Rating -------- */
+/* -------- for Post -------- */
+
+.post {
+    padding: 10px;
+    margin-top: 30px;
+    border: lightgray solid 1px;
+    border-radius: 0px 25px 25px 25px;
+}
+
+.post_name {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.post_date {
+    font-size: 10px;
+    color: #6c757d;
+}
+
+.post_image {
+    width: 70px;
+    height: 70px;
+    border: white solid 1px;
+    border-radius: 50px;
+    padding: 2px;
+    margin: 2px;
+}
 
 
 /* -------- for Pagination -------- */
 
 /* -------- for Progress -------- */
 
-.rating{
+#progress-bar-1 {
+    background-color: var(--bar-1);
+    width: 10%;
+}
+
+#progress-bar-2 {
+    background-color: var(--bar-2);
+    width: 20%;
+}
+
+#progress-bar-3 {
+    background-color: var(--bar-3);
+    width: 30%;
+}
+
+#progress-bar-4 {
+    background-color: var(--bar-4);
+    width: 40%;
+}
+
+#progress-bar-5 {
+    background-color: var(--bar-5);
+    width: 50%;
+}
+
+#progress-bar-6 {
+    background-color: var(--bar-6);
+    width: 60%;
+}
+
+#progress-bar-7 {
+    background-color: var(--bar-7);
+    width: 70%;
+}
+
+#progress-bar-8 {
+    background-color: var(--bar-8);
+    width: 80%;
+}
+
+#progress-bar-9 {
+    background-color: var(--bar-9);
+    width: 90%;
+}
+
+#progress-bar-10 {
+    background-color: var(--bar-10);
+    width: 100%;
+}
+
+.rating {
     padding: 17px;
     border: 1px silver solid;
     border-radius: 25px;
@@ -160,3 +226,8 @@ footer {
 .rating::-ms-thumb {
     background: green;
 }
+
+.text-justify {
+    text-align: justify;
+}
+

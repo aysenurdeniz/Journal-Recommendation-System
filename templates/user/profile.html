@@ -2,22 +2,22 @@
 {% block title %} Profile {% endblock %}
 {% block body_content %}
 {% if user %}
-<div class="container-fluid">
+<div class="container-fluid" id="accordion">
     <div class="row">
         <div class="col-lg-2 border-end m-1 d-flex align-items-end flex-column">
-            <button type="button" class="btn btn-primary m-2 w-b" data-bs-toggle="collapse" data-bs-target="#profile"
+            <button type="button" class="btn btn-outline-primary m-2 w-b" data-bs-toggle="collapse" data-bs-target="#profile"
                     aria-controls="profile" aria-expanded="true">
                 Profile
             </button>
             {% if user['role'] == 'admin' %}
-            <button type="button" class="btn btn-primary m-2 w-b" data-bs-toggle="collapse" data-bs-target="#all-users"
+            <button type="button" class="btn btn-outline-primary m-2 w-b" data-bs-toggle="collapse" data-bs-target="#all-users"
                     aria-controls="all-users" aria-expanded="false">
                 All Users
             </button>
             {% endif %}
         </div>
         <div class="col-lg-9 row m-2">
-            <div class="col-lg-6 collapse show border-end m-2" id="profile">
+            <div class="col-lg-6 collapse show border-end m-2" id="profile" data-bs-parent="#accordion">
                 <form id="profile_update" method="post">
                     <div class="form-group">
                         <label for="UpdateFullName">Full name</label>
@@ -49,7 +49,7 @@
                     <button type="submit" class="btn btn-primary" formaction="/update"> Update</button>
                 </form>
             </div>
-            <div class="col-lg-11 collapse" id="all-users">
+            <div class="col-lg-11 collapse" id="all-users" data-bs-parent="#accordion">
                 <table class="p-2 table">
                     <thead>
                     <tr class="p-1 border-bottom">
@@ -94,7 +94,7 @@
                         </td>
                         <td>
                             <form method="POST" action="{{ url_for('delete', id=item['_id']) }}">
-                                <input type="submit" value="Delete"
+                                <input type="submit" class="btn btn-danger" value="Delete"
                                        onclick="return confirm('Are you sure you want to delete this entry?')">
                             </form>
                         </td>
@@ -147,7 +147,7 @@
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
                                         </button>
-                                        <button type="submit" class="btn btn-primary">Save changes</button>
+                                        <button type="submit" class="btn btn-success">Save changes</button>
                                     </div>
                                 </form>
                             </div>

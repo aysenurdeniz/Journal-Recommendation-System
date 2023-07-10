@@ -20,11 +20,21 @@ app.secret_key = os.urandom(20)
 @app.route("/", methods=["GET", "POST"])
 def index():
     index_title = "Content & Feedback JRS"
-    fields, guery, search_word = "*", "*", "*"
-    wos_core, frequency = "", ""
+    solr_time, solr_count_results, solr_results = solrCon.solr_search("200", "*:*")
+    solr_sec = float((solr_time / 1000) % 60)
+
+    pagination, items_pagination = paginate(solr_results, 10)
+
+    return render_template('index.html', index_title=index_title, numresults=solr_count_results, results=solr_results,
+                           timeFin=solr_sec, pagination=pagination, items=items_pagination)
+
+
+@app.route("/search", methods=["GET", "POST"])
+def search():
+    query, search_word = "*:*", "*"
+    wos_core, frequency, journal_id = "", "", ""
 
     if request.method == "POST":
-        fields = "Aims_and_Scope"
         search_word = request.form["searchWord"]
         journal_id = request.form.get("journal_id")
         rating = request.form.get("rating")
@@ -48,38 +58,8 @@ def index():
 
     pagination, items_pagination = paginate(solr_results, 10)
 
-    return render_template('index.html', index_title=index_title, numresults=solr_count_results, results=solr_results,
+    return render_template('index.html', numresults=solr_count_results, results=solr_results,
                            timeFin=solr_sec, pagination=pagination, items=items_pagination)
-
-
-@app.route("/search", methods=["GET", "POST"])
-def search():
-    fields, guery, search_word = "*", "*", "*"
-
-    if request.method == "POST":
-        fields = "Aims_and_Scope"
-        search_word = request.form.get("searchWord")
-        rating = request.form.get("rating")
-        wos_core = request.form.get("wos_core")
-        frequency = request.form.get("frequency")
-
-        if len(wos_core) != 0:
-            query = "Aims_and_Scope:{} AND Web_of_Science_Core_Collection:{}".format(search_word, wos_core)
-
-        if len(frequency) != 0:
-            query = "Aims_and_Scope:{} AND Publication_Frequency:{}".format(search_word, frequency)
-
-        if len(frequency) != 0 and len(wos_core) != 0:
-            query = "Aims_and_Scope:{} AND Publication_Frequency:{} AND Web_of_Science_Core_Collection:{}".format(
-                search_word, frequency, wos_core)
-
-        solr_time, solr_count_results, solr_results = solrCon.solr_search("200", query)
-        solr_sec = float((solr_time / 1000) % 60)
-
-        pagination, items_pagination = paginate(solr_results, 10)
-
-        return render_template('index.html', numresults=solr_count_results, results=solr_results,
-                               timeFin=solr_sec, pagination=pagination, items=items_pagination)
 
 
 @app.route('/general/about_us')
@@ -211,16 +191,18 @@ def comment():
 
             mongoDBCon.my_col.update_one({"_id": user["_id"]},
                                          {"$set": {"comments.{}".format(journal_id): {"com": comment_text,
-                                                                                      "rating": rating_range}}})
+                                                                                      "rating": rating_range,
+                                                                                      "created_date": datetime.now()}}})
     return redirect(url_for('index'))
 
 
-@app.route('/<comment_id>')
+@app.route('/get_comments/<comment_id>', methods=["POST"])
 def get_comments(comment_id):
     cursor = mongoDBCon.my_col.find({"comments.{}".format(comment_id): {"$exists": "true"}})
     comments = [(cur["full_name"], cur["comments"][comment_id]["com"],
-                 cur["comments"][comment_id]["rating"]) for cur in cursor]
-    return render_template(url_for('index'), comments=comments)
+                 cur["comments"][comment_id]["rating"], cur["comments"][comment_id]["created_date"]) for cur in cursor]
+    rate = [cur["comments"][comment_id]["rating"] for cur in cursor]
+    return render_template('index.html', comments=comments)
 
 
 @app.post('/<id>/delete/')
@@ -239,7 +221,7 @@ def update(id):
 
         mongoDBCon.my_col.update_one({"_id": ObjectId(id)},
                                      {"$set": {"user_name": user_name, "full_name": full_name, "email": email,
-                                               "department": department}})
+                                               "department": department, "updated_date": datetime.now()}})
     return redirect(url_for('profile'))
 
 
