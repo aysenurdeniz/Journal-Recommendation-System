@@ -9,46 +9,46 @@
             {% if document and document|length > 0 %}
             <div class="border-bottom m-3">
                 <p class="text-uppercase text-center text-bold fs-4">
-                    {% if document[1][0]['Journal_Name']%}{{ document[1][0]['Journal_Name'][0]}}{% endif %}
+                    {% if document[2][0]['Journal_Name']%}{{ document[2][0]['Journal_Name'][0]}}{% endif %}
                 </p>
             </div>
             <p>
                 <b>Publisher: </b>
-                {% if document[1][0]['Publisher']%}{{ document[1][0]['Publisher'][0]}}{% endif %}
+                {% if document[2][0]['Publisher']%}{{ document[2][0]['Publisher'][0]}}{% endif %}
             </p>
             <p>
                 <b>ISSN / eISSN: </b>
-                {% if document[1][0]['ISSN___eISSN']%}{{ document[1][0]['ISSN___eISSN'][0]}}{% endif %}
+                {% if document[2][0]['ISSN___eISSN']%}{{ document[2][0]['ISSN___eISSN'][0]}}{% endif %}
             </p>
             <p>
                 <b>Web of Science Core Collection: </b>
-                {% if document[1][0]['Web_of_Science_Core_Collection']%}{{
-                document[1][0]['Web_of_Science_Core_Collection'][0]}}{% endif %}
+                {% if document[2][0]['Web_of_Science_Core_Collection']%}{{
+                document[2][0]['Web_of_Science_Core_Collection'][0]}}{% endif %}
             </p>
             <p>
                 <b>Additional Web of Science Indexes: </b>
-                {% if document[1][0]['Additional_Web_of_Science_Indexes']%}{{
-                document[1][0]['Additional_Web_of_Science_Indexes'][0]}}{% endif %}
+                {% if document[2][0]['Additional_Web_of_Science_Indexes']%}{{
+                document[2][0]['Additional_Web_of_Science_Indexes'][0]}}{% endif %}
             </p>
             <p>
                 <b>Journal Website:</b>
-                <a href="{% if document[1][0]['Journal_Website']%}{{ document[1][0]['Journal_Website'][0]}}{% endif %}"
+                <a href="{% if document[2][0]['Journal_Website']%}{{ document[2][0]['Journal_Website'][0]}}{% endif %}"
                    target="_blank">
-                    {% if document[1][0]['Journal_Website']%}{{ document[1][0]['Journal_Website'][0]}}{% endif %}
+                    {% if document[2][0]['Journal_Website']%}{{ document[2][0]['Journal_Website'][0]}}{% endif %}
                 </a>
             </p>
             <p>
                 <b>Publication Frequency: </b>
-                {% if document[1][0]['Publication_Frequency']%}{{ document[1][0]['Publication_Frequency'][0]}}{% endif
+                {% if document[2][0]['Publication_Frequency']%}{{ document[2][0]['Publication_Frequency'][0]}}{% endif
                 %}
             </p>
             <p class="text-justify">
                 <b>Aims and Scope: </b>
-                {% if document[1][0]['Aims_and_Scope']%}{{ document[1][0]['Aims_and_Scope'][0]}}{% endif %}
+                {% if document[2][0]['Aims_and_Scope']%}{{ document[2][0]['Aims_and_Scope'][0]}}{% endif %}
             </p>
             <p class="text-justify">
                 <b>Indexing and Abstracting: </b>
-                {% if document[1][0]['Indexing_and_Abstracting']%}{{ document[1][0]['Indexing_and_Abstracting'][0]}}{%
+                {% if document[2][0]['Indexing_and_Abstracting']%}{{ document[2][0]['Indexing_and_Abstracting'][0]}}{%
                 endif %}
             </p>
             {% endif %}
@@ -60,7 +60,7 @@
                 </div>
                 <form class="input-group m-2 row" action="/comment" method="post">
                     <div class="p-2 col-7">
-                        <input hidden name="journal_id" value="{{ document[1][0]['id'] }}">
+                        <input hidden name="journal_id" value="{{ document[2][0]['id'] }}">
                         <input name="comment_text" type="text" class="form-control rounded-pill"
                                placeholder="Comment"
                                aria-label="Comment" aria-describedby="comment">

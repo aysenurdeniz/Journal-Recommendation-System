@@ -10,11 +10,10 @@ class SolrCon:
     solr_url = 'http://localhost:8983/solr/wos2/select?'
     conn = pysolr.Solr(solr_url)
 
-    def solr_search(self, row_size, query):
+    def solrSearch(self, row_size=200, query=""):
         """
         A method to search in Apache Solr
-        :param fields: string
-        :param search_word: string
+        :param query:
         :param row_size: int
         :return: int, response, document
         """
@@ -26,14 +25,22 @@ class SolrCon:
         return finish_time, response['response']['numFound'], response['response']['docs']
 
 
-def solr_doc_update(self, id, comment_doc):
-    doc = [{'id': id, 'comments': {'set': [comment_doc]}}]
 
+# solrc = SolrCon()
+# finish_time, cont, doc = solrc.solrSearch(100, "Aims_and_Scope:Systems%20AND%20Indexing_and_Abstracting:Scopus")
+#
+# ids = ["0"]*1655
+#
+# for i in range(0, results['response']['numFound']):
+#     ids[i] = results["response"]['docs'][i]["id"]
+#
+# def solr_doc_update(self, id, comment_doc):
+#     doc = [{'id': id, 'comments': {'set': [comment_doc]}}]
+#
 #
 # solr_url = 'http://localhost:8983/solr/wos'
 # conn = pysolr.Solr(solr_url)
-#
-#
+
 # def solr_doc_update(id, comment_doc):
 #     doc = {'id': id, 'comments': {'set': [comment_doc]}}
 #     conn.add(doc)

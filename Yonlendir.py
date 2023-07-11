@@ -20,19 +20,47 @@ app.secret_key = os.urandom(20)
 @app.route("/", methods=["GET", "POST"])
 def index():
     index_title = "Content & Feedback JRS"
-    query = "*:*"
+    solr_time, solr_count_results, solr_results = solrCon.solrSearch("200", "*:*")
+    solr_sec = float((solr_time / 1000) % 60)
+    pagination, items_pagination = paginate(solr_results, 10)
+
+    return render_template('index.html', index_title=index_title, numResults=solr_count_results, results=solr_results,
+                           timeFin=solr_sec, pagination=pagination, items=items_pagination)
+
+
+@app.route("/search", methods=["GET", "POST"])
+def search():
+    fields, query, search_word = "*", "*", "*"
 
     if request.method == "POST":
         search_word = request.form.get("searchWord")
         ind_abs = request.form.get("ind_abs")
         wos_core = request.form.get("wos_core")
         frequency = request.form.get("frequency")
-        query = build_query(search_word, ind_abs, wos_core, frequency)
 
-    solr_count_results, solr_results, solr_sec = solr_search(query)
+        if len(search_word) != 0:
+            query = "Aims_and_Scope%3A{}".format(search_word, wos_core)
+
+        if len(wos_core) != 0:
+            query = "Aims_and_Scope%3A{}%20AND%20Web_of_Science_Core_Collection%3A{}".format(search_word, wos_core)
+
+        if len(frequency) != 0:
+            query = "Aims_and_Scope%3A{}%20AND%20Publication_Frequency%3A{}".format(search_word, frequency)
+
+        if len(ind_abs) != 0:
+            query = "Aims_and_Scope%3A{}%20AND%20Indexing_and_Abstracting%3A{}".format(search_word, ind_abs)
+
+        if len(frequency) != 0 and len(wos_core) != 0 and len(ind_abs) != 0:
+            query = "Aims_and_Scope%3A{}%20AND%20Publication_Frequency%3A{}%20AND%20Web_of_Science_Core_Collection%3A{}%20AND%20Indexing_and_Abstracting%3A{}".format(
+                search_word, frequency, wos_core, ind_abs)
+
+    solr_time, solr_count_results, solr_results = solrCon.solrSearch("200", query)
+    solr_sec = float((solr_time / 1000) % 60)
+
     pagination, items_pagination = paginate(solr_results, 10)
-    return render_template('index.html', index_title=index_title, numresults=solr_count_results,
-                           results=solr_results, timeFin=solr_sec, pagination=pagination, items=items_pagination)
+
+    return render_template('index.html', numResults=solr_count_results, results=solr_results,
+                           timeFin=solr_sec, pagination=pagination, items=items_pagination)
 
 
 @app.route('/general/about_us')
@@ -53,49 +81,49 @@ def journal():
 # ----------------- Search Operation -------------------
 
 
-@app.route("/search", methods=["GET", "POST"])
-def search():
-    query = "*:*"
-    if request.method == "POST":
-        search_word = request.form.get("searchWord")
-        ind_abs = request.form.get("ind_abs")
-        wos_core = request.form.get("wos_core")
-        frequency = request.form.get("frequency")
-        query = build_query(search_word, ind_abs, wos_core, frequency)
-
-    solr_count_results, solr_results, solr_sec = solr_search(query)
-    pagination, items_pagination = paginate(solr_results, 10)
-
-    return render_template('index.html', numresults=solr_count_results, results=solr_results,
-                           timeFin=solr_sec, pagination=pagination, items=items_pagination)
-
-
-def build_query(search_word, ind_abs, wos_core, frequency):
-    query_parts = []
-
-    if search_word:
-        query_parts.append(f"Aims_and_Scope:{search_word}")
-
-    if ind_abs:
-        query_parts.append(f"Indexing_and_Abstracting:{ind_abs}")
-
-    if wos_core:
-        query_parts.append(f"Web_of_Science_Core_Collection:{wos_core}")
-
-    if frequency:
-        query_parts.append(f"Publication_Frequency:{frequency}")
-
-    if not query_parts:
-        query_parts.append("*:*")
-
-    query = "%20AND%20".join(query_parts)
-    return query
-
-
+# @app.route("/search", methods=["GET", "POST"])
+# def search():
+#     query = "*:*"
+#     if request.method == "POST":
+#         search_word = request.form.get("searchWord")
+#         ind_abs = request.form.get("ind_abs")
+#         wos_core = request.form.get("wos_core")
+#         frequency = request.form.get("frequency")
+#         query = build_query(search_word, ind_abs, wos_core, frequency)
+#
+#     solr_count_results, solr_results, solr_sec = solr_search(query)
+#     pagination, items_pagination = paginate(solr_results, 10)
+#
+#     return render_template('index.html', numresults=solr_count_results, results=solr_results,
+#                            timeFin=solr_sec, pagination=pagination, items=items_pagination)
+#
+#
+# def build_query(search_word, ind_abs, wos_core, frequency):
+#     query_parts = []
+#
+#     if search_word:
+#         query_parts.append(f"Aims_and_Scope:{search_word}")
+#
+#     if ind_abs:
+#         query_parts.append(f"Indexing_and_Abstracting:{ind_abs}")
+#
+#     if wos_core:
+#         query_parts.append(f"Web_of_Science_Core_Collection:{wos_core}")
+#
+#     if frequency:
+#         query_parts.append(f"Publication_Frequency:{frequency}")
+#
+#     if not query_parts:
+#         query_parts.append("*:*")
+#
+#     query = "%20AND%20".join(query_parts)
+#     return query
+#
+#
 def solr_search(query):
-    solr_time, solr_count_results, solr_results = solrCon.solr_search(1655, query)
-    solr_sec = float((solr_time / 1000) % 60)
-    return solr_count_results, solr_results, solr_sec
+    solr_timee, solr_count_results, solr_results = solrCon.solrSearch(query=query, row_size=200)
+    solr_time = float((solr_timee / 1000) % 60)
+    return solr_time, solr_count_results, solr_results
 
 
 # ------------------ Comment Operations ---------------------
@@ -117,15 +145,15 @@ def comment():
                                                                                       "rating": rating_range,
                                                                                       "created_date": datetime.now()}}})
         comments = get_comment_by_id(journal_id)
-        document = solr_search("id:{}".format(journal_id))
+        document = solrCon.solrSearch(query="id:{}".format(journal_id))
         return render_template('/general/journal.html', comments=comments, document=document)
 
 
 @app.route('/journal/<comment_id>', methods=["POST"])
 def journal_detail(comment_id):
-    document = solr_search("id:{}".format(comment_id))
-    print(document)
     comments = get_comment_by_id(comment_id)
+    document = solrCon.solrSearch(query="id:{}".format(comment_id))
+    print(document)
     return render_template('/general/journal.html', comments=comments, document=document)
 
 
@@ -263,13 +291,27 @@ def update(id):
     return redirect(url_for('profile'))
 
 
+@app.post('/update_b/<id>')
+def update_b(id):
+    if request.method == "POST":
+        user_name = request.form.get("user_name")
+        full_name = request.form.get("full_name")
+        email = request.form.get("email")
+        department = request.form.get("department")
+
+        mongoDBCon.my_col.update_one({"_id": ObjectId(id)},
+                                     {"$set": {"user_name": user_name, "full_name": full_name, "email": email,
+                                               "department": department, "updated_date": datetime.now()}})
+    return render_template('/user/profile.html')
+
+
 # -----------------------------------------------------------
 
 def paginate(results, per_page):
     page = int(request.args.get('page', 1))
     offset = (page - 1) * per_page
-    total = len(results)
     items_pagination = results[offset:offset + per_page]
+    total = len(results)
     pagination = Pagination(page=page, per_page=per_page, offset=offset, total=total)
     return pagination, items_pagination
 
