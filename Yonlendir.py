@@ -116,7 +116,9 @@ def comment():
                                          {"$set": {"comments.{}".format(journal_id): {"com": comment_text,
                                                                                       "rating": rating_range,
                                                                                       "created_date": datetime.now()}}})
-            return redirect(url_for('journal'))
+        comments = get_comment_by_id(journal_id)
+        document = solr_search("id:{}".format(journal_id))
+        return render_template('/general/journal.html', comments=comments, document=document)
 
 
 @app.route('/journal/<comment_id>', methods=["POST"])
