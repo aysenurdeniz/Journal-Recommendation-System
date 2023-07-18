@@ -1,23 +1,50 @@
-import pandas as pd
-from back_end.machine_learning.FeatureEngineering import text_preprocessing
-from back_end.machine_learning.TF_IDF import tf_idf
-from back_end.machine_learning.Text_Visualization import bar_plot, word_cloud
+import json
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_selection import SelectKBest, chi2
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
 
-df = pd.read_csv("back_end/dataset/wos-engineering.csv", sep=",")
-fields, fields_size = df.columns, df.columns.size
+# JSON dosyasını okuyun
+with open('C:\\Users\\anurd\\Downloads\\wos.json', 'r') as file:
+    data = json.load(file)
 
-# --------- Preprocessing ---------
+# Aims and Scope metinlerini ve etiketleri alın
+corpus = [journal["Aims and Scope"] for journal in data]
+labels = [journal["Journal Name"] for journal in data]
 
-df["cleaned_aims_and_scope"] = text_preprocessing(df, "Aims and Scope")
+# TF-IDF vektörlerine dönüştürme
+vectorizer = TfidfVectorizer()
+X = vectorizer.fit_transform(corpus)
 
-# --------- TF-IDF ---------
+# Chi-Square özelliği seçimini uygulama
+k = 1000  # Özellik sayısı
+selector = SelectKBest(chi2, k=k)
+X_selected = selector.fit_transform(X, labels)
 
-X = tf_idf(df, "cleaned_aims_and_scope")
+# KNN modelini eğitme
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(X_selected, labels)
 
-# ---------- Text Visualization --------------
+# Kullanıcıdan metin girişi al
+user_input = input("Metin girin: ")
 
-bar_plot(df, "cleaned_aims_and_scope", 10)
+# Kullanıcının girdisini TF-IDF vektörüne dönüştürme
+user_input_vector = vectorizer.transform([user_input])
 
-word_cloud(df, "cleaned_aims_and_scope")
+# Seçilen özelliklere uygulama
+user_input_selected = selector.transform(user_input_vector)
 
+# En yakın komşuları bulma
+distances, indices = knn.kneighbors(user_input_selected)
 
+# Tavsiye sonuçlarını yazdırma
+print("Tavsiye Edilen Dergiler:")
+for index in indices.flatten():
+    print(data[index]["Journal Name"])
+
+# Doğruluk metriğini hesaplama
+true_labels = labels  # Gerçek sınıf etiketleri
+predicted_labels = knn.predict(X_selected)  # Öngörülen sınıf etiketleri
+
+accuracy = accuracy_score(true_labels, predicted_labels)
+print("Doğruluk:", accuracy)
