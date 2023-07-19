@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pymongo
 
 # ----------------------------   TEST  ---------------------------
@@ -40,13 +42,45 @@ my_col.find({"name": {"$regex": "^ayse"}}).limit(2).__getitem__(1)
 my_col.delete_one(my_query)
 
 my_col.find(my_query2).limit(1).next()  # not found
-my_col.find(my_query1).limit(1).next()  # it found
+
+my_query1 = {'comments': '1'}
+user = my_col.find(my_query1)  # it found
+
+journal_id = 1
+
+journal_id = "15c1767d-446d-4f51-9468-3ce17b031fa4"
+cursor = my_col.find({"comments.{}".format(journal_id): {"$exists": "true"}})
+
+comments = [(cur["full_name"], cur["comments"][journal_id]["com"],
+                     cur["comments"][journal_id]["rating"]) for cur in cursor]
+
+for cur in cursor:
+    print(cur['_id'])
+
+comments = []
+for cur in cursor:
+    comments.append(
+        (cur["full_name"],
+         cur["comments"][journal_id]["com"],
+         cur["comments"][journal_id]["rating"]))
+
+
+for com in cursor:
+    print(com["comments"][journal_id]["com"])
+
+db = [cur for cur in my_col.find({"comments.7": {"$exists": "true"}})]
+
+user.get("comments")['1']['com']
 
 # ---- Update Method -----
-myquery = {'user_name': 'consuelo.eaton'}
-newvalues = {"$set": {'user_name': 'consuelo'}}
+myquery = {'user_name': 'anurdenizz'}
+newvalues = {"$set": {'comments':{journal_id : {"yorum"}}}}
 
 my_col.update_one(myquery, newvalues)
+journal_id = "41f00210-3301-497a-9148-cf1a48685a72"
+my_col.update_many({}, {"$set": {"comments.{}".format(journal_id): {"com": "Good journal", "rating": 7}}})
+my_col.update_many({}, {"$set": {"comments.{}".format(journal_id): {" created_date": datetime.now()}}})
+
 my_col.find({'user_name': 'consuelo'}).next()
 # {'_id': ObjectId('63d0410cb8f8c6fced821c32'), 'id': 2, 'user_name': 'consuelo', 'password': '0869347314'}
 
