@@ -92,7 +92,7 @@ print(f"Metin: {data[index_doc2vec_best]['Journal Name']}\nBenzerlik Skoru: {cos
 print("\nEn İyi Tavsiye (Ngram Temsili):")
 print(f"Metin: {data[index_ngram_best]['Journal Name']}\nBenzerlik Skoru: {cosine_similarities_ngram[0][index_ngram_best]}\n")
 
-# ------------------------------------------------
+# ------------------ for TF IDF ------------------------------
 
 import json
 import numpy as np
