@@ -13,7 +13,7 @@ with open('C:\\Users\\anurd\\Downloads\\wos.json', 'r') as file:
     data = json.load(file)
 
 # Kullanıcıdan metin girdisi alınması
-user_input = "algorithm system printing"
+user_input = "information systems retrieval knowledge discovery and data mining"
 
 # Metinleri çıkarma
 texts = [entry["Aims and Scope"] for entry in data]
@@ -92,30 +92,93 @@ print(f"Metin: {data[index_doc2vec_best]['Journal Name']}\nBenzerlik Skoru: {cos
 print("\nEn İyi Tavsiye (Ngram Temsili):")
 print(f"Metin: {data[index_ngram_best]['Journal Name']}\nBenzerlik Skoru: {cosine_similarities_ngram[0][index_ngram_best]}\n")
 
-# Karşılaştırma ve en iyi temsil yöntemini belirleme
-best_similarity = max(cosine_similarities_tfidf[0][index_tfidf_best],
-                      cosine_similarities_bow[0][index_bow_best],
-                      cosine_similarities_word2vec[0][index_word2vec_best],
-                      # cosine_similarities_fasttext[0][index_fasttext_best],
-                      # cosine_similarities_glove[0][index_glove_best],
-                      cosine_similarities_doc2vec[0][index_doc2vec_best],
-                      cosine_similarities_ngram[0][index_ngram_best])
+# ------------------------------------------------
+
+import json
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity, euclidean_distances, manhattan_distances
+
+# JSON dosyasını okuyun
+with open('C:\\Users\\anurd\\Downloads\\wos.json', 'r') as file:
+    data = json.load(file)
+
+# Kullanıcıdan metin girdisi alınması
+user_input = "information systems retrieval knowledge discovery and data mining"
+
+# Metinleri çıkarma
+texts = [entry["Aims and Scope"] for entry in data]
+
+# TF-IDF temsili
+tfidf_vectorizer = TfidfVectorizer()
+tfidf_matrix = tfidf_vectorizer.fit_transform(texts + [user_input])
+
+# Metinler arasındaki benzerlikleri hesaplama
+cosine_similarities_tfidf = cosine_similarity(tfidf_matrix[-1], tfidf_matrix[:-1])
+euclidean_distances_tfidf = euclidean_distances(tfidf_matrix[-1], tfidf_matrix[:-1])
+manhattan_distances_tfidf = manhattan_distances(tfidf_matrix[-1], tfidf_matrix[:-1])
+
+# L1, L2, Chebyshev ve Minkowski benzerliklerini hesaplama
+l1_distances_tfidf = np.linalg.norm(tfidf_matrix[-1].toarray() - tfidf_matrix[:-1].toarray(), ord=1, axis=1)
+l2_distances_tfidf = np.linalg.norm(tfidf_matrix[-1].toarray() - tfidf_matrix[:-1].toarray(), ord=2, axis=1)
+chebyshev_distances_tfidf = np.max(np.abs(tfidf_matrix[-1].toarray() - tfidf_matrix[:-1].toarray()), axis=1)
+minkowski_distances_tfidf = np.linalg.norm(tfidf_matrix[-1].toarray() - tfidf_matrix[:-1].toarray(), ord=3, axis=1)
+
+# En iyi tavsiyeyi bulma
+index_tfidf_best = np.argmax(cosine_similarities_tfidf)
+index_euclidean_best = np.argmin(euclidean_distances_tfidf)
+index_manhattan_best = np.argmin(manhattan_distances_tfidf)
+index_l1_best = np.argmin(l1_distances_tfidf)
+index_l2_best = np.argmin(l2_distances_tfidf)
+index_chebyshev_best = np.argmin(chebyshev_distances_tfidf)
+index_minkowski_best = np.argmin(minkowski_distances_tfidf)
+
+# Sonuçları yazdırma
+print("\nEn İyi Tavsiye (TF-IDF Temsili - Cosine Benzerliği):")
+print(f"Metin: {data[index_tfidf_best]['Journal Name']}\nBenzerlik Skoru: {cosine_similarities_tfidf[0][index_tfidf_best]}\n")
+
+print("\nEn İyi Tavsiye (TF-IDF Temsili - Euclidean Benzerliği):")
+print(f"Metin: {data[index_euclidean_best]['Journal Name']}\nBenzerlik Skoru: {1 / (1 + euclidean_distances_tfidf[0][index_euclidean_best])}\n")
+
+print("\nEn İyi Tavsiye (TF-IDF Temsili - Manhattan Benzerliği):")
+print(f"Metin: {data[index_manhattan_best]['Journal Name']}\nBenzerlik Skoru: {1 / (1 + manhattan_distances_tfidf[0][index_manhattan_best])}\n")
+
+print("\nEn İyi Tavsiye (TF-IDF Temsili - L1 Benzerliği):")
+print(f"Metin: {data[index_l1_best]['Journal Name']}\nBenzerlik Skoru: {1 / (1 + l1_distances_tfidf[index_l1_best])}\n")
+
+print("\nEn İyi Tavsiye (TF-IDF Temsili - L2 Benzerliği):")
+print(f"Metin: {data[index_l2_best]['Journal Name']}\nBenzerlik Skoru: {1 / (1 + l2_distances_tfidf[index_l2_best])}\n")
+
+print("\nEn İyi Tavsiye (TF-IDF Temsili - Chebyshev Benzerliği):")
+print(f"Metin: {data[index_chebyshev_best]['Journal Name']}\nBenzerlik Skoru: {1 / (1 + chebyshev_distances_tfidf[index_chebyshev_best])}\n")
+
+print("\nEn İyi Tavsiye (TF-IDF Temsili - Minkowski Benzerliği):")
+print(f"Metin: {data[index_minkowski_best]['Journal Name']}\nBenzerlik Skoru: {1 / (1 + minkowski_distances_tfidf[index_minkowski_best])}\n")
+
+# En iyi benzerlik ölçüsünü belirleme
+best_similarity_tfidf = max(cosine_similarities_tfidf[0][index_tfidf_best],
+                            1 / (1 + euclidean_distances_tfidf[0][index_euclidean_best]),
+                            1 / (1 + manhattan_distances_tfidf[0][index_manhattan_best]),
+                            1 / (1 + l1_distances_tfidf[index_l1_best]),
+                            1 / (1 + l2_distances_tfidf[index_l2_best]),
+                            1 / (1 + chebyshev_distances_tfidf[index_chebyshev_best]),
+                            1 / (1 + minkowski_distances_tfidf[index_minkowski_best]))
 
 best_method = None
 
-if best_similarity == cosine_similarities_tfidf[0][index_tfidf_best]:
-    best_method = "TF-IDF"
-elif best_similarity == cosine_similarities_bow[0][index_bow_best]:
-    best_method = "Bag-of-Words (BoW)"
-elif best_similarity == cosine_similarities_word2vec[0][index_word2vec_best]:
-    best_method = "Word2Vec"
-# elif best_similarity == cosine_similarities_fasttext[0][index_fasttext_best]:
-    # best_method = "FastText"
-# elif best_similarity == cosine_similarities_glove[0][index_glove_best]:
-    # best_method = "GloVe"
-elif best_similarity == cosine_similarities_doc2vec[0][index_doc2vec_best]:
-    best_method = "Doc2Vec"
-elif best_similarity == cosine_similarities_ngram[0][index_ngram_best]:
-    best_method = "Ngram"
+if best_similarity_tfidf == cosine_similarities_tfidf[0][index_tfidf_best]:
+    best_method = "Cosine"
+elif best_similarity_tfidf == 1 / (1 + euclidean_distances_tfidf[0][index_euclidean_best]):
+    best_method = "Euclidean"
+elif best_similarity_tfidf == 1 / (1 + manhattan_distances_tfidf[0][index_manhattan_best]):
+    best_method = "Manhattan"
+elif best_similarity_tfidf == 1 / (1 + l1_distances_tfidf[index_l1_best]):
+    best_method = "L1"
+elif best_similarity_tfidf == 1 / (1 + l2_distances_tfidf[index_l2_best]):
+    best_method = "L2"
+elif best_similarity_tfidf == 1 / (1 + chebyshev_distances_tfidf[index_chebyshev_best]):
+    best_method = "Chebyshev"
+elif best_similarity_tfidf == 1 / (1 + minkowski_distances_tfidf[index_minkowski_best]):
+    best_method = "Minkowski"
 
-print(f"\nEn iyi temsil yöntemi: {best_method}")
+print(f"\nEn iyi benzerlik yöntemi (TF-IDF Temsili): {best_method}")
