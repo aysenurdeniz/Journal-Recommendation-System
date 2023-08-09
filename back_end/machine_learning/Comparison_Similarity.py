@@ -115,7 +115,7 @@ for method_class in methods:
     method.compute_similarity()
     recommendations = method.get_best_recommendations(top_k=5)
 
-    print("\nEn İyi 3 Tavsiye ({})".format(method_class.__name__))
+    print("\nEn İyi Tavsiyeler ({})".format(method_class.__name__))
     for i, recommendation in enumerate(recommendations, start=1):
-        print(f"{i}. Metin: {recommendation[0]}\nBenzerlik Skoru: {recommendation[1]}\n")
+        print(f"{recommendation[0]},{recommendation[1]:.3f}")
     print(f"Süre: {method.processing_time:.4f} s\n")
