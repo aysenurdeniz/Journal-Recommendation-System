@@ -105,8 +105,8 @@ class NgramMethods(GenericMethods):
 with open('C:\\Users\\anurd\\Downloads\\wos.json', 'r') as file:
     data = json.load(file)
 
-# user_input = "information systems retrieval knowledge discovery and data mining"
-user_input = "Novel additive manufacturing processes and techniques"
+user_input = "information systems retrieval knowledge discovery and data mining"
+# user_input = "Novel additive manufacturing processes and techniques Improvements of established methods and materials"
 
 methods = [TFIDFMethods, BowMethods, Word2VecMethods, Doc2VecMethods, NgramMethods]
 
