@@ -1,5 +1,3 @@
-# Journal-Recommendation-System
-
 **Flask projeleri için notlar:**
 
 ---
